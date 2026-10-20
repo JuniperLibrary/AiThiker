@@ -1,0 +1,31 @@
+# IDE / 编辑器
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 工具状态与缓存
+.sisyphus/
+.DS_Store
+Thumbs.db
+
+# 临时文件与脚本
+test-curl.sh
+*.log
+*.tmp
+
+# 语言环境
+__pycache__/
+*.pyc
+node_modules/
+venv/
+.venv/
+
+# Go 编译产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+build/
