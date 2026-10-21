@@ -4,7 +4,7 @@
 
 ## 内容覆盖
 
-- LangChain / LangGraph
+- LangChain / LangGraph（参见 [`compare-langchain-langgraph.md`](./compare-langchain-langgraph.md) — 组件库 vs 状态机编排引擎，含术语标注表）
 - AutoGen / AG2
 - CrewAI
 - OpenAI Assistants API
