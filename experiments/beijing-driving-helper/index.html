@@ -269,6 +269,24 @@
   .route-result.bad { background: #fef2f2; border-color: #fecaca; }
   .route-result.bad .verdict { color: var(--bad); }
   .route-result .route-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+  .cite {
+    margin-top: 8px; padding-top: 7px; border-top: 1px dashed currentColor;
+    font-size: 11px; line-height: 1.65; opacity: .9;
+  }
+  .cite .cite-item { display: block; }
+  .cite a { color: inherit; text-decoration: underline dotted; }
+  .rule-item { border-top: 1px solid var(--border); padding: 8px 0; font-size: 12px; line-height: 1.6; }
+  .rule-item:first-child { border-top: none; }
+  .rule-item .rule-title { font-weight: 600; color: var(--text); }
+  .rule-item .rule-src { color: var(--muted); font-size: 11.5px; word-break: break-all; }
+  .rule-item .rule-tags { margin-top: 3px; display: flex; gap: 5px; flex-wrap: wrap; }
+  .rule-tag {
+    font-size: 10.5px; padding: 1px 6px; border-radius: 999px;
+    background: #eef2f7; color: var(--muted); border: 1px solid var(--border);
+  }
+  .rule-tag.on { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+  .rule-tag.off { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+  .rule-tag.pend { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
   #toast {
     position: fixed; left: 50%; bottom: 26px; z-index: 9999;
     transform: translate(-50%, 16px); opacity: 0; pointer-events: none;
@@ -367,10 +385,25 @@
         <select id="dayOverride" style="width:auto;min-width:190px;">
           <option value="auto">自动识别(2025–2026 日历)</option>
           <option value="holiday">按法定节假日</option>
-          <option value="workday">按调休补班日</option>
+          <option value="workday">按调休补班日(不限行)</option>
         </select>
       </label>
       <p class="note" id="calNote"></p>
+    </section>
+
+    <!-- 车辆 -->
+    <section class="card">
+      <h2>🚗 车辆信息 <span class="hint">可选,用于 9–17 时尾号限行</span></h2>
+      <div class="form-row">
+        <div class="field" style="max-width:140px;">
+          <label>车牌尾号</label>
+          <input type="text" id="plateInput" maxlength="6" placeholder="如:6 或 A">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <p class="note" style="margin:0;">工作日 9:00–17:00 五环(含)以内按尾号限行,英文字母按 0 号管理。不填则该时段不判断,仅提示。外埠号牌新能源小客车<b>不豁免</b>。</p>
+        </div>
+      </div>
     </section>
 
     <!-- 结论 -->
@@ -379,6 +412,7 @@
       <div class="verdict" id="verdictText">请选择目的地</div>
       <div class="sub" id="verdictSub">点击地图、常用地点,或手动输入坐标</div>
       <ul id="verdictList"></ul>
+      <div class="cite" id="verdictCite" hidden></div>
     </div>
 
     <!-- 路线体检 -->
@@ -480,12 +514,18 @@
       <div class="rules">
         <b>① 进京证</b>:外埠号牌车辆进入六环路(不含)以内道路及<b>通州全域</b>,须办理进京通行证。可在「北京交警」APP / 交管12123 办理。<br>
         <b>② 高峰限行</b>:工作日 <b>7:00–9:00</b>、<b>17:00–20:00</b>,外埠小客车禁止在<b>五环路(含)</b>以内道路通行。<br>
-        <b>③ 周末/节假日</b>:非工作日不受高峰时段限制(进入六环内仍须办证);<b>调休补班日按工作日</b>处理。<br>
-        <b>④ 证有效期</b>:每次最长 7 天;每辆车每年最多办理 12 次,到期须续办或重新办理。<br>
-        <b>⑤ 特殊道路</b>:二环主路、长安街延长线等特定路段另有全天或时段性限行,出行前请用导航核实。<br>
-        <b>⑥ 提醒</b>:进京证到期前须驶出六环内及通州全域,否则可能被处罚。<br>
-        <span class="hint">参考:北京市公安局公安交通管理局(jtgl.beijing.gov.cn)。本工具不替代官方发布。</span>
+        <b>③ 尾号限行</b>:工作日 <b>9:00–17:00</b>,外埠小客车在五环(含)以内按车牌尾号限行,与本市车同步轮换;字母尾号按 0 管理。<br>
+        <b>④ 周末/节假日</b>:非工作日不受高峰与尾号限制(进入六环内仍须办证);<b>调休补班的周六日依现行通告括注不限行</b>。<br>
+        <b>⑤ 证有效期</b>:每次最长 7 天;每辆车每年最多办理 12 次,到期须续办或重新办理。<br>
+        <b>⑥ 特殊道路</b>:二环(含)以内全天禁行,大兴/顺义部分道路高峰也禁行——本工具无这些区域的几何数据,<b>未逐点判断</b>,出行前请用导航核实。<br>
+        <b>⑦ 提醒</b>:进京证到期前须驶出六环内及通州全域,否则可能被处罚。<br>
+        <span class="hint">每条规则的法源、条款与核对日期见下方「📚 规则库」。本工具不替代官方发布。</span>
       </div>
+    </details>
+
+    <details id="rulesBox">
+      <summary>📚 规则库(法源 · 条款 · 核对状态)</summary>
+      <div id="rulesList"></div>
     </details>
   </aside>
 
@@ -1766,6 +1806,7 @@ var app = {
   limit: 12,
   favorites: [],
   override: 'auto',
+  plate: '',
   route: { start: null, end: null, picking: null, vertices: null, group: null },
   lastResult: null
 };
@@ -1799,6 +1840,8 @@ function loadState() {
   app.favorites = normalizeFavorites(LS.get('jjz_favs', []));
   var ov = LS.get('jjz_day_override', 'auto');
   app.override = ['auto', 'holiday', 'workday'].indexOf(ov) >= 0 ? ov : 'auto';
+  var pl = LS.get('jjz_plate', '');
+  app.plate = typeof pl === 'string' ? pl.slice(0, 6) : '';
 }
 
 function saveRecords() {
@@ -1894,7 +1937,7 @@ function updateDayLine(date) {
   } else if (!hasCalendarYear(date.getFullYear())) {
     note.textContent = '⚠ ' + date.getFullYear() + ' 年节假日数据未内置,当前仅按周末判断;可手动指定日期类型。';
   } else {
-    note.textContent = '依据内置 2025–2026 年放假安排自动判断;调休补班日按工作日处理。';
+    note.textContent = '依据内置 2025–2026 年放假安排自动判断;调休上班的周六日依现行通告括注不限行。';
   }
 }
 
@@ -1905,6 +1948,8 @@ function renderEmpty() {
   $('verdictText').textContent = '请选择目的地';
   $('verdictSub').textContent = '点击地图、常用地点,或手动输入坐标';
   $('verdictList').innerHTML = '';
+  $('verdictCite').hidden = true;
+  $('verdictCite').innerHTML = '';
   $('zoneBadge').hidden = true;
   if (app.map) $('mapTip').textContent = '点击地图设置目的地';
   else $('mapTip').textContent = '地图不可用,请用左侧手动输入';
@@ -1925,6 +1970,7 @@ function renderResult(r) {
         : '<span class="tag ok">无需进京证</span>')
   ];
   if (r.peak) tags.push('<span class="tag bad">' + esc(r.peak.label) + '</span>');
+  if (r.tailBlocked) tags.push('<span class="tag bad">尾号限行</span>');
   if (r.uncertain) tags.push('<span class="tag warn">边界待核实</span>');
   $('resultTags').innerHTML = tags.join('');
   $('verdictText').textContent = r.title;
@@ -1932,6 +1978,25 @@ function renderResult(r) {
   $('verdictList').innerHTML = r.lines.map(function(l) {
     return '<li><b>' + esc(l[0]) + ':</b> ' + esc(l[1]) + '</li>';
   }).join('');
+
+  /* 法源引用 + 未覆盖披露 */
+  var cite = $('verdictCite');
+  var citeHtml = (r.citations || []).map(function(c) {
+    return '<span class="cite-item">📄 ' + esc(c.title) + ' — ' + esc(c.file) +
+      (c.article ? ' ' + esc(c.article) : '') +
+      ' · <a href="' + esc(c.url) + '" target="_blank" rel="noreferrer">原文</a>' +
+      ' · 核对 ' + esc(c.verified_at) + '</span>';
+  }).join('');
+  citeHtml += (r.gaps || []).map(function(g) {
+    return '<span class="cite-item">⚠ 未覆盖: ' + esc(g.title) + ' — ' + esc(g.gap) + '</span>';
+  }).join('');
+  if (citeHtml) {
+    cite.hidden = false;
+    cite.innerHTML = citeHtml;
+  } else {
+    cite.hidden = true;
+    cite.innerHTML = '';
+  }
 
   var zb = $('zoneBadge');
   zb.hidden = false;
@@ -2008,6 +2073,32 @@ function renderPermList(date) {
   }).join('');
 }
 
+/* 规则库面板:法源 / 条款 / 核对状态 / 是否参与判断 */
+function renderRules() {
+  $('rulesList').innerHTML = RULES.map(function(r) {
+    var s = r.source;
+    var tags = [
+      '<span class="rule-tag ' + (r.implemented ? 'on' : 'off') + '">' +
+        (r.implemented ? '✓ 参与判断' : '⚠ 未覆盖,仅披露') + '</span>',
+      '<span class="rule-tag">置信 ' + esc(r.confidence) + '</span>',
+      '<span class="rule-tag">核对 ' + esc(s.verified_at) + '</span>'
+    ];
+    if (r.penalty) tags.push('<span class="rule-tag pend">处罚:' + esc(r.penalty.detail) + '</span>');
+    var html = '<div class="rule-item">' +
+      '<div class="rule-title">' + esc(r.title) + '</div>' +
+      '<div class="rule-src">' + esc(s.file) +
+        (s.article ? ' · ' + esc(s.article) : '') +
+        (s.effective_from ? ' · 生效 ' + esc(s.effective_from) +
+          (s.effective_to ? ' 至 ' + esc(s.effective_to) : ' 起') : '') +
+        '<br><a href="' + esc(s.url) + '" target="_blank" rel="noreferrer">' + esc(s.url) + '</a></div>' +
+      '<div class="rule-tags">' + tags.join('') + '</div>';
+    if (r.gap) html += '<div class="rule-src" style="margin-top:4px;">缺口:' + esc(r.gap) + '</div>';
+    if (r.notes) html += '<div class="rule-src" style="margin-top:4px;">' + esc(r.notes) + '</div>';
+    html += '</div>';
+    return html;
+  }).join('');
+}
+
 function refresh() {
   var date = readTimeInput();
   updateDayLine(date);
@@ -2022,6 +2113,7 @@ function refresh() {
     records: app.records,
     limit: app.limit,
     override: app.override,
+    plate: app.plate,
     now: new Date()
   });
   app.lastResult = r;
@@ -2203,7 +2295,7 @@ function renderRouteResult(r, route, departure) {
   html += '</ul>';
 
   var actions = [];
-  if (r.peakConflict && r.earliestWithPermit) {
+  if ((r.peakConflict || r.tailConflict) && r.earliestWithPermit) {
     actions.push({
       at: r.earliestWithPermit,
       label: '出发改到 ' + fmtDepart(r.earliestWithPermit) + (r.permitMissing ? '(需办证)' : '')
@@ -2215,6 +2307,14 @@ function renderRouteResult(r, route, departure) {
     html += '<div class="route-actions">' + actions.map(function(a) {
       return '<button class="btn sm" type="button" data-depart="' +
         esc(a.at.toISOString()) + '">' + esc(a.label) + '</button>';
+    }).join('') + '</div>';
+  }
+
+  /* 未覆盖规则披露(仅披露,不参与判断) */
+  var gaps = r.gaps || [];
+  if (gaps.length) {
+    html += '<div class="cite">' + gaps.map(function(g) {
+      return '<span class="cite-item">⚠ 未覆盖: ' + esc(g.title) + ' — ' + esc(g.gap) + '</span>';
     }).join('') + '</div>';
   }
   box.innerHTML = html;
@@ -2244,7 +2344,7 @@ function runRouteCheck() {
   task.then(function(route) {
     var departure = readTimeInput();
     var res = analyzeRoute(route.vertices, departure, {
-      records: app.records, limit: app.limit, override: app.override
+      records: app.records, limit: app.limit, override: app.override, plate: app.plate
     });
     app.route.vertices = route.vertices;
     drawRouteGraphics();
@@ -2596,6 +2696,12 @@ function bindEvents() {
     refresh();
   });
 
+  $('plateInput').addEventListener('input', function() {
+    app.plate = String(this.value || '').slice(0, 6);
+    LS.set('jjz_plate', app.plate);
+    refresh();
+  });
+
   $('limitInput').addEventListener('change', function() {
     var v = parseInt(this.value, 10);
     if (!(v > 0)) { this.value = app.limit; return; }
@@ -2719,10 +2825,12 @@ function init() {
   loadState();
   renderPresets();
   renderFavs();
+  renderRules();
   setTimeInput(defaultPlanTime());
   $('policyBadge').textContent = '政策版 ' + POLICY_VERSION.slice(0, 7);
   $('dayOverride').value = app.override;
   $('limitInput').value = app.limit;
+  $('plateInput').value = app.plate;
   $('permDateInput').value = ymd(new Date());
   bindEvents();
   refresh();
