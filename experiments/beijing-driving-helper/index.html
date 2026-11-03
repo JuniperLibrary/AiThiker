@@ -1,0 +1,2786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>北京外埠车出行合规助手</title>
+<!-- AICode Begin -->
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --panel-bg: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --primary: #2563eb;
+    --ok: #16a34a;
+    --warn: #d97706;
+    --bad: #dc2626;
+    --radius: 12px;
+    --shadow: 0 6px 24px rgba(15, 23, 42, .08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+  }
+  a { color: var(--primary); }
+  header {
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 11px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  header .brand { display: flex; align-items: center; gap: 10px; }
+  header h1 { font-size: 17px; letter-spacing: .2px; }
+  header .sub { color: var(--muted); font-size: 12.5px; }
+  header .badge {
+    font-size: 11px; color: var(--primary); background: #eff6ff;
+    border: 1px solid #bfdbfe; border-radius: 999px; padding: 2px 8px;
+    white-space: nowrap;
+  }
+  main { flex: 1; display: flex; min-height: 0; }
+  #panel {
+    width: 410px;
+    min-width: 340px;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #panel::-webkit-scrollbar { width: 8px; }
+  #panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+  #map { flex: 1; min-width: 0; background: #e8eef5; position: relative; }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px;
+    background: #fbfcfe;
+  }
+  .card h2 {
+    font-size: 14px; margin-bottom: 10px; color: var(--text);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .card h2 .hint { font-weight: normal; color: var(--muted); font-size: 11.5px; }
+  .hint { color: var(--muted); font-size: 11.5px; }
+  .note { font-size: 11.5px; color: var(--muted); line-height: 1.6; margin-top: 7px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 999px;
+    padding: 4px 11px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text);
+    line-height: 1.4;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chip:hover { border-color: var(--primary); color: var(--primary); }
+  .chip .fav-x {
+    color: #94a3b8; font-size: 13px; line-height: 1;
+    padding: 0 1px; border-radius: 50%;
+  }
+  .chip .fav-x:hover { color: var(--bad); background: #fef2f2; }
+  .coord-row {
+    display: flex; gap: 7px; align-items: center; flex-wrap: wrap;
+    font-size: 12px; color: var(--muted); margin-top: 9px; min-height: 24px;
+  }
+  .coord-row code {
+    background: #f1f5f9; padding: 2px 7px; border-radius: 6px;
+    color: var(--text); font-size: 11.5px; max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  input[type=text], input[type=datetime-local], input[type=number],
+  input[type=date], select {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    width: 100%;
+    background: #fff;
+    color: var(--text);
+    font-family: inherit;
+  }
+  input:focus, select:focus { outline: 2px solid #bfdbfe; border-color: var(--primary); }
+  label.row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text); }
+  label.row span { flex: 1; }
+  .form-row { display: flex; gap: 8px; margin-top: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .form-row .field { flex: 1; min-width: 80px; }
+  .form-row .field label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .quick-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  button.btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  button.btn:hover { opacity: .9; }
+  button.btn:disabled { opacity: .5; cursor: wait; }
+  button.btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  button.btn.ghost:hover { color: var(--primary); border-color: var(--primary); }
+  button.btn.sm { padding: 5px 10px; font-size: 12px; }
+  #result {
+    border-radius: var(--radius);
+    padding: 14px;
+    border: 1px solid var(--border);
+    transition: background .15s, border-color .15s;
+  }
+  #result .verdict { font-size: 19px; font-weight: 700; margin: 4px 0 5px; line-height: 1.35; }
+  #result .sub { font-size: 12px; color: var(--muted); line-height: 1.55; }
+  #result ul {
+    list-style: none; font-size: 12.5px; color: var(--muted);
+    display: flex; flex-direction: column; gap: 5px; margin-top: 10px;
+    border-top: 1px dashed var(--border); padding-top: 9px;
+  }
+  #result ul li { line-height: 1.55; }
+  #result ul li b { color: var(--text); font-weight: 600; }
+  #result.ok { background: #f0fdf4; border-color: #bbf7d0; }
+  #result.ok .verdict { color: var(--ok); }
+  #result.permit { background: #fffbeb; border-color: #fde68a; }
+  #result.permit .verdict { color: var(--warn); }
+  #result.bad { background: #fef2f2; border-color: #fecaca; }
+  #result.bad .verdict { color: var(--bad); }
+  #result.neutral { background: #f8fafc; border-color: var(--border); }
+  #result.neutral .verdict { color: var(--muted); }
+  .tag-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; line-height: 1.5; padding: 2px 8px; border-radius: 999px;
+    background: #f1f5f9; color: var(--muted); border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .tag.ok { background: #f0fdf4; color: var(--ok); border-color: #bbf7d0; }
+  .tag.warn { background: #fffbeb; color: var(--warn); border-color: #fde68a; }
+  .tag.bad { background: #fef2f2; color: var(--bad); border-color: #fecaca; }
+  .perm-stats { display: flex; gap: 8px; font-size: 12px; flex-wrap: wrap; }
+  .perm-stats .stat {
+    flex: 1; min-width: 82px; background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 6px; text-align: center;
+  }
+  .perm-stats .stat .num { font-size: 18px; font-weight: 700; color: var(--primary); line-height: 1.3; }
+  .perm-stats .stat .lbl { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .bar { height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 9px; }
+  .bar > i { display: block; height: 100%; background: var(--primary); width: 0; transition: width .25s; }
+  .bar.low > i { background: var(--warn); }
+  .bar.empty > i { background: var(--bad); }
+  .rec-list { margin-top: 9px; display: flex; flex-direction: column; gap: 6px; }
+  .rec {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    background: #fff; border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 12.5px;
+  }
+  .rec .rec-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .rec .rec-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rec .rec-tag { font-size: 11px; color: var(--muted); }
+  .rec .rec-tag.active { color: var(--ok); }
+  .rec .rec-tag.expired { color: var(--bad); }
+  .rec .rec-tag.overlap { color: var(--warn); }
+  .rec .del {
+    color: #cbd5e1; cursor: pointer; font-size: 14px; background: none;
+    border: none; padding: 4px; border-radius: 6px; flex: none;
+  }
+  .rec .del:hover { color: var(--bad); background: #fef2f2; }
+  details { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+  details summary { cursor: pointer; font-size: 12.5px; color: var(--muted); user-select: none; }
+  details summary:hover { color: var(--primary); }
+  details .rules { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.85; }
+  details .rules b { color: var(--text); }
+  details details { margin-top: 8px; padding-top: 8px; }
+  .layer-switch { display: flex; gap: 12px; font-size: 12.5px; margin-top: 6px; flex-wrap: wrap; }
+  .layer-switch label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .layer-switch input { accent-color: var(--primary); }
+  .map-tip {
+    position: absolute; z-index: 500; top: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(15,23,42,.82); color: #fff; font-size: 12px; padding: 6px 14px;
+    border-radius: 999px; pointer-events: none; max-width: calc(100% - 24px);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    box-shadow: 0 2px 10px rgba(15,23,42,.2);
+  }
+  .map-legend {
+    position: absolute; z-index: 500; left: 10px; bottom: 22px;
+    background: rgba(255,255,255,.94); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 9px; font-size: 11px; color: var(--muted);
+    display: flex; flex-direction: column; gap: 4px; box-shadow: var(--shadow);
+  }
+  .map-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; }
+  .map-fallback {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    padding: 24px; text-align: center; color: var(--muted); font-size: 13.5px;
+    line-height: 1.8; background: #eef2f7; z-index: 400;
+  }
+  .pin { font-size: 25px; line-height: 25px; text-align: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,.25)); }
+  .pin-tip {
+    background: #1e293b !important; color: #fff !important; border: none !important;
+    font-size: 11.5px !important; padding: 3px 8px !important; border-radius: 6px !important;
+    box-shadow: none !important;
+  }
+  .pin-tip::before { border-top-color: #1e293b !important; }
+  .route-points { display: flex; flex-direction: column; gap: 6px; }
+  .route-point {
+    display: flex; align-items: center; gap: 8px; background: #fff;
+    border: 1px solid var(--border); border-radius: 9px; padding: 7px 9px;
+  }
+  .route-point .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .route-point .dot.start { background: var(--ok); }
+  .route-point .dot.end { background: var(--bad); }
+  .route-point .rp-main { flex: 1; min-width: 0; }
+  .route-point .rp-label { font-size: 10.5px; color: var(--muted); }
+  .route-point .rp-val {
+    font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .route-point button { flex: none; }
+  .route-result {
+    margin-top: 10px; border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 12px; background: #f8fafc;
+  }
+  .route-result .verdict { font-size: 15.5px; font-weight: 700; margin: 3px 0 4px; line-height: 1.4; color: var(--muted); }
+  .route-result .sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .route-result ul {
+    list-style: none; margin-top: 8px; display: flex; flex-direction: column; gap: 5px;
+    font-size: 12px; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 8px;
+  }
+  .route-result ul li { line-height: 1.55; }
+  .route-result ul li b { color: var(--text); font-weight: 600; }
+  .route-result.ok { background: #f0fdf4; border-color: #bbf7d0; }
+  .route-result.ok .verdict { color: var(--ok); }
+  .route-result.permit { background: #fffbeb; border-color: #fde68a; }
+  .route-result.permit .verdict { color: var(--warn); }
+  .route-result.bad { background: #fef2f2; border-color: #fecaca; }
+  .route-result.bad .verdict { color: var(--bad); }
+  .route-result .route-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+  #toast {
+    position: fixed; left: 50%; bottom: 26px; z-index: 9999;
+    transform: translate(-50%, 16px); opacity: 0; pointer-events: none;
+    background: rgba(15,23,42,.92); color: #fff; font-size: 12.5px;
+    padding: 9px 15px; border-radius: 999px; max-width: min(90vw, 460px);
+    text-align: center; line-height: 1.5; transition: opacity .18s, transform .18s;
+    box-shadow: 0 6px 24px rgba(15,23,42,.25);
+  }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (max-width: 860px) {
+    header { padding: 9px 12px; gap: 6px; }
+    header h1 { font-size: 15.5px; }
+    header .sub { display: none; }
+    main { flex-direction: column; }
+    #panel { width: 100%; min-width: 0; max-height: 60%; border-right: none; border-bottom: 1px solid var(--border); }
+    #map { height: 40%; min-height: 220px; }
+    .map-legend { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>🚗 北京外埠车出行合规助手</h1>
+    <span class="badge" id="policyBadge">政策版 2026-11</span>
+  </div>
+  <span class="sub">目的地限行判断 · 进京证账本 · 数据仅供辅助,以官方为准</span>
+</header>
+
+<main>
+  <aside id="panel">
+    <!-- 目的地 -->
+    <section class="card">
+      <h2>📍 目的地 <span class="hint">点地图选点 / 选常用地点</span></h2>
+      <div class="chips" id="presetChips"></div>
+      <div class="chips" id="favChips" style="margin-top:6px;" hidden></div>
+      <div class="coord-row">
+        <span>当前点</span>
+        <code id="coordDisplay">未选择</code>
+        <span class="tag" id="zoneBadge" hidden></span>
+      </div>
+      <div class="quick-row">
+        <button class="btn ghost sm" id="useNow" type="button">📡 定位</button>
+        <button class="btn ghost sm" id="favBtn" type="button">☆ 收藏此点</button>
+      </div>
+      <div class="form-row" id="favForm" hidden>
+        <div class="field">
+          <label>收藏名称</label>
+          <input type="text" id="favName" maxlength="20" placeholder="如:公司、孩子学校">
+        </div>
+        <button class="btn sm" id="favSave" type="button">保存</button>
+      </div>
+      <details id="manualDetails">
+        <summary>手动输入坐标 / 地址搜索</summary>
+        <div class="form-row">
+          <div class="field"><label>纬度</label><input type="number" id="manualLat" step="0.0001" placeholder="39.9087"></div>
+          <div class="field"><label>经度</label><input type="number" id="manualLng" step="0.0001" placeholder="116.3975"></div>
+          <button class="btn" id="manualBtn" type="button">判断</button>
+        </div>
+        <div class="form-row" id="searchRow" hidden>
+          <div class="field" style="flex:3;">
+            <label>地址搜索(需高德 Web 服务 Key)</label>
+            <input type="text" id="geoInput" placeholder="如:望京SOHO">
+          </div>
+          <button class="btn" id="geoBtn" type="button">搜索</button>
+        </div>
+        <details>
+          <summary>⚙ 配置高德 Key(可选)</summary>
+          <p class="note" style="margin-top:4px;">在<a href="https://console.amap.com/" target="_blank" rel="noreferrer">高德开放平台</a>免费申请「Web服务」Key,填入后可按地址搜索。不填也能用地图选点。</p>
+          <div class="form-row">
+            <div class="field" style="flex:3;">
+              <label>高德 Web 服务 Key</label>
+              <input type="text" id="amapKeyInput" placeholder="粘贴 Key">
+            </div>
+            <button class="btn sm" id="saveKeyBtn" type="button">保存</button>
+          </div>
+        </details>
+      </details>
+    </section>
+
+    <!-- 时间 -->
+    <section class="card">
+      <h2>🕐 计划时间 <span class="hint">支持未来日期</span></h2>
+      <input type="datetime-local" id="timeInput">
+      <div class="quick-row">
+        <button class="btn ghost sm" data-quick="now" type="button">现在</button>
+        <button class="btn ghost sm" data-quick="tomorrow-am" type="button">明天 8:00</button>
+        <button class="btn ghost sm" data-quick="next" type="button">下个可通行时段</button>
+      </div>
+      <div class="tag-row" style="margin-top:8px;">
+        <span class="tag" id="dayBadge">--</span>
+        <span class="tag" id="peakBadge">--</span>
+      </div>
+      <label class="row" style="margin-top:9px;">
+        <span>日期判断</span>
+        <select id="dayOverride" style="width:auto;min-width:190px;">
+          <option value="auto">自动识别(2025–2026 日历)</option>
+          <option value="holiday">按法定节假日</option>
+          <option value="workday">按调休补班日</option>
+        </select>
+      </label>
+      <p class="note" id="calNote"></p>
+    </section>
+
+    <!-- 结论 -->
+    <div id="result" class="neutral" aria-live="polite">
+      <div class="tag-row" id="resultTags"></div>
+      <div class="verdict" id="verdictText">请选择目的地</div>
+      <div class="sub" id="verdictSub">点击地图、常用地点,或手动输入坐标</div>
+      <ul id="verdictList"></ul>
+    </div>
+
+    <!-- 路线体检 -->
+    <section class="card">
+      <h2>🧭 路线合规体检 <span class="hint">按到达时刻逐段判断</span></h2>
+      <div class="route-points">
+        <div class="route-point">
+          <span class="dot start"></span>
+          <div class="rp-main">
+            <div class="rp-label">起点</div>
+            <div class="rp-val" id="routeStartVal">未设置</div>
+          </div>
+          <button class="btn ghost sm" id="pickStartBtn" type="button">地图选</button>
+        </div>
+        <div class="route-point">
+          <span class="dot end"></span>
+          <div class="rp-main">
+            <div class="rp-label">终点</div>
+            <div class="rp-val" id="routeEndVal">未设置</div>
+          </div>
+          <button class="btn ghost sm" id="pickEndBtn" type="button">地图选</button>
+        </div>
+      </div>
+      <div class="quick-row">
+        <button class="btn ghost sm" id="routeUseNow" type="button">起点=当前位置</button>
+        <button class="btn ghost sm" id="routeUseDest" type="button">终点=当前点</button>
+        <button class="btn sm" id="routeCheckBtn" type="button">体检</button>
+      </div>
+      <p class="note" id="routeHint">出发时间取「计划时间」。配置高德 Key 后获取真实驾车路线,否则按直线估算。</p>
+      <details id="routeManual">
+        <summary>手动输入起点 / 终点坐标</summary>
+        <div class="form-row">
+          <div class="field"><label>起点纬度</label><input type="number" id="routeStartLat" step="0.0001" placeholder="39.9000"></div>
+          <div class="field"><label>起点经度</label><input type="number" id="routeStartLng" step="0.0001" placeholder="116.4000"></div>
+          <button class="btn sm" id="routeStartManualBtn" type="button">设起点</button>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>终点纬度</label><input type="number" id="routeEndLat" step="0.0001" placeholder="39.9500"></div>
+          <div class="field"><label>终点经度</label><input type="number" id="routeEndLng" step="0.0001" placeholder="116.5000"></div>
+          <button class="btn sm" id="routeEndManualBtn" type="button">设终点</button>
+        </div>
+      </details>
+      <div id="routeResult" hidden></div>
+    </section>
+
+    <!-- 进京证账本 -->
+    <section class="card">
+      <h2>📇 进京证账本 <span class="hint">自动保存在本机</span></h2>
+      <div class="perm-stats">
+        <div class="stat"><div class="num" id="permUsed">0</div><div class="lbl">已用次数</div></div>
+        <div class="stat"><div class="num" id="permLeft">0</div><div class="lbl">剩余次数</div></div>
+        <div class="stat"><div class="num" id="permStatus">--</div><div class="lbl">计划日证件</div></div>
+      </div>
+      <div class="bar" id="permBarWrap"><i id="permBar"></i></div>
+      <p class="note" id="permHint"></p>
+      <div class="quick-row">
+        <button class="btn sm" id="renewBtn" type="button">续办 7 天</button>
+        <button class="btn ghost sm" id="exportBtn" type="button">导出备份</button>
+        <button class="btn ghost sm" id="importBtn" type="button">导入备份</button>
+        <button class="btn ghost sm" id="clearBtn" type="button">清空</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+      <div class="form-row">
+        <div class="field" style="max-width:105px;">
+          <label>每年上限</label>
+          <input type="number" id="limitInput" min="1" max="60" value="12">
+        </div>
+        <div class="field">
+          <label>办理日期</label>
+          <input type="date" id="permDateInput">
+        </div>
+        <div class="field" style="max-width:88px;">
+          <label>有效天数</label>
+          <input type="number" id="permDaysInput" min="1" max="7" value="7">
+        </div>
+        <button class="btn" id="addPermBtn" type="button">记录</button>
+      </div>
+      <p class="note">规则:进入六环(不含)内及通州全域需进京证;每次最长 7 天;每年最多 12 次(上限可自行调整,以官方为准)。</p>
+      <div class="rec-list" id="permList"></div>
+    </section>
+
+    <!-- 图层与规则 -->
+    <section class="card">
+      <h2>🗺 地图图层</h2>
+      <div class="layer-switch">
+        <label><input type="checkbox" id="layerFive" checked> 五环路</label>
+        <label><input type="checkbox" id="layerSix" checked> 六环路</label>
+        <label><input type="checkbox" id="layerTong" checked> 通州全域</label>
+      </div>
+      <div class="layer-switch" style="margin-top:6px;">
+        <label><input type="radio" name="tile" value="amap" checked> 高德图</label>
+        <label><input type="radio" name="tile" value="osm"> OpenStreetMap</label>
+      </div>
+      <p class="note">边界来自 OpenStreetMap(ODbL)并抽稀简化:五环/六环偏差约数十米,通州行政边界约数百米。贴近边界时请以导航实际线路为准。</p>
+    </section>
+
+    <details open>
+      <summary>📜 外埠车限行政策速览(政策版 2026-11)</summary>
+      <div class="rules">
+        <b>① 进京证</b>:外埠号牌车辆进入六环路(不含)以内道路及<b>通州全域</b>,须办理进京通行证。可在「北京交警」APP / 交管12123 办理。<br>
+        <b>② 高峰限行</b>:工作日 <b>7:00–9:00</b>、<b>17:00–20:00</b>,外埠小客车禁止在<b>五环路(含)</b>以内道路通行。<br>
+        <b>③ 周末/节假日</b>:非工作日不受高峰时段限制(进入六环内仍须办证);<b>调休补班日按工作日</b>处理。<br>
+        <b>④ 证有效期</b>:每次最长 7 天;每辆车每年最多办理 12 次,到期须续办或重新办理。<br>
+        <b>⑤ 特殊道路</b>:二环主路、长安街延长线等特定路段另有全天或时段性限行,出行前请用导航核实。<br>
+        <b>⑥ 提醒</b>:进京证到期前须驶出六环内及通州全域,否则可能被处罚。<br>
+        <span class="hint">参考:北京市公安局公安交通管理局(jtgl.beijing.gov.cn)。本工具不替代官方发布。</span>
+      </div>
+    </details>
+  </aside>
+
+  <div id="map">
+    <div class="map-tip" id="mapTip">地图加载中…</div>
+    <div class="map-legend" id="mapLegend">
+      <span><i style="background:#dc2626;"></i>五环路</span>
+      <span><i style="background:#2563eb;"></i>六环路</span>
+      <span><i style="background:#16a34a;"></i>通州全域</span>
+    </div>
+    <div class="map-fallback" id="mapFallback" hidden>
+      地图组件加载失败(需联网)<br>
+      请用左侧「手动输入坐标」判断,核心逻辑不依赖地图。
+    </div>
+  </div>
+</main>
+
+<div id="toast" role="status"></div>
+
+<script>
+/* =========================================================
+ * 纯逻辑区(无 DOM 依赖):日期 / 节假日 / 几何 / 合规判断
+ * 该区段可被单独抽取做单元测试
+ * ========================================================= */
+/* ===== 纯逻辑:开始 ===== */
+var POLICY_VERSION = '2026-11-03';
+var VERIFIED_AT = '2026-11-03';   // 最后核对法源原文日期
+var WEEK_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+/* ===== 规则库(法源驱动,见 SPEC.md §4.2) =====
+ * 任何规则必须能回溯到原始文件;不能回溯的不得参与结论。
+ * verified_at = 最后核对原文日期;implemented=false 表示引擎未覆盖,只披露不判断。 */
+var RULES = [
+  {
+    id: 'workday-definition',
+    title: '"工作日"定义(调休上班的周六日不限行)',
+    source: {
+      file: '北京市人民政府关于实施工作日高峰时段区域限行交通管理措施的通告',
+      article: '正文括注:工作日(因法定节假日放假调休而调整为上班的星期六、星期日除外)',
+      issuer: '北京市人民政府',
+      published: '2026-03-18',
+      effective_from: '2026-03-30',
+      effective_to: '2027-03-28',
+      url: 'https://www.beijing.gov.cn/zhengce/zhengcefagui/202603/t20260323_4564097.html',
+      verified_at: VERIFIED_AT
+    },
+    elements: {
+      subject: '限行体系内机动车(含外埠号牌载客汽车)',
+      time: '休息日 = 周六/周日/法定节假日/因调休上班的周六日;工作日 = 其余周一至周五',
+      space: '本市行政区域',
+      action: '—',
+      exemptions: [],
+      exceptions: ['法定节假日日期依据国务院办公厅年度放假安排,内置 2025–2026 年;未内置年份仅按周末判断']
+    },
+    notes: '2025、2026 年度通告均带此括注。外埠高峰禁行源自 2010 年第 18 号通告(用语"工作日"),本引擎按同一定义处理,故调休补班的周六日不限行。',
+    confidence: 'medium',
+    implemented: true
+  },
+  {
+    id: 'peak-five-ring',
+    title: '外埠载客汽车工作日早晚高峰禁入五环(含)以内',
+    source: {
+      file: '北京市人民政府关于实施工作日高峰时段区域限行交通管理措施的通告',
+      article: '第二条"外埠机动车限行"',
+      issuer: '北京市人民政府',
+      published: '2026-03-18',
+      effective_from: '2026-03-30',
+      effective_to: '2027-03-28',
+      url: 'https://www.beijing.gov.cn/zhengce/zhengcefagui/202603/t20260323_4564097.html',
+      verified_at: VERIFIED_AT
+    },
+    corroborating: [
+      {
+        file: '关于对非本市进京载客汽车采取交通管理措施的通告(北京市公安局通告 2010 年第 18 号)',
+        article: '第二条',
+        url: 'https://jtgl.beijing.gov.cn/jgj/jgxx/gsgg/jttg/bjsgajtg/336035/index.html',
+        verified_at: VERIFIED_AT
+      },
+      {
+        file: '外埠号牌机动车进京注意事项(北京交警专题)',
+        article: '禁限行规定',
+        url: 'https://jtgl.beijing.gov.cn/jgj/lszt/659722/659725/index.html',
+        verified_at: VERIFIED_AT
+      }
+    ],
+    elements: {
+      subject: '外省、区、市核发号牌(含临时号牌)载客汽车,非豁免车型',
+      time: '工作日 7:00-9:00、17:00-20:00',
+      space: '五环路(含)以内道路(五环主路、辅路及其以内)',
+      action: '在道路上行驶',
+      exemptions: ['豁免车型见 exempt-vehicles;本引擎按非豁免小型载客汽车假设'],
+      exceptions: ['周末、法定节假日、调休上班的周六日(见 workday-definition)'],
+      peak_am: [420, 540],
+      peak_pm: [1020, 1200]
+    },
+    penalty: {
+      basis: '认定为"机动车违反禁令标志指示"的违法行为(《道路交通安全法》第九十条;《道路交通安全违法行为记分管理办法》第十二条第(四)项)',
+      detail: '罚款 100 元,记 1 分',
+      verified_at: VERIFIED_AT,
+      url: 'https://jtgl.beijing.gov.cn/jgj/qaknowledge/325750944/325731479/325731508/325753011/index.html'
+    },
+    confidence: 'high',
+    implemented: true
+  },
+  {
+    id: 'permit-required',
+    title: '进入六环(不含)以内及通州全域须办进京通行证',
+    source: {
+      file: '北京市交通委员会 北京市环境保护局 北京市公安局公安交通管理局关于对部分载客汽车采取交通管理措施的通告(京交发〔2018〕102 号)',
+      article: '第一条',
+      issuer: '北京市交通委员会、北京市环境保护局、北京市公安局公安交通管理局',
+      published: '2018-06-15',
+      effective_from: '2019-11-01',
+      effective_to: null,
+      url: 'https://www.beijing.gov.cn/zhengce/gfxwj/sj/201905/t20190522_61309.html',
+      verified_at: VERIFIED_AT
+    },
+    corroborating: [
+      {
+        file: '外埠号牌机动车进京注意事项(北京交警专题)',
+        article: '小客车注意事项',
+        url: 'https://jtgl.beijing.gov.cn/jgj/lszt/659722/659725/index.html',
+        verified_at: VERIFIED_AT
+      }
+    ],
+    elements: {
+      subject: '外省、区、市核发号牌(含临时号牌)载客汽车',
+      time: '全天(与时刻无关)',
+      space: '六环路(不含)以内道路和通州区全域范围道路(不含高速公路主路);延庆城区部分道路另见 yanqing-permit',
+      action: '行驶(通行证放置于前风挡玻璃内侧左下部)',
+      exemptions: ['已领外埠客运通行证的省际长途客运、省际旅游客运', '军队、武警车辆及执行任务的警车、救护车、消防车、工程救险车', '整车运送鲜活农产品的载货汽车(按货车规定通行)'],
+      exceptions: ['高速公路主路']
+    },
+    penalty: {
+      basis: '未办理或超过有效期进入上述范围道路行驶,认定为"违反禁令标志指示行驶"(京交发〔2018〕102 号第二条);《道路交通安全法》第九十条、第一百一十四条',
+      detail: '罚款 100 元,记 1 分(依 2026 年公开行政复议决定,违法代码 11165)',
+      verified_at: VERIFIED_AT,
+      url: 'https://www.bjxch.gov.cn/xxgk/xxxq/pnidpv994223.html'
+    },
+    confidence: 'high',
+    implemented: true
+  },
+  {
+    id: 'permit-quota',
+    title: '进京证额度:每年 12 次、每次最长 7 天、按自然年计',
+    source: {
+      file: '北京市交通委员会 北京市环境保护局 北京市公安局公安交通管理局关于对部分载客汽车采取交通管理措施的通告(京交发〔2018〕102 号)',
+      article: '第二条',
+      issuer: '北京市交通委员会、北京市环境保护局、北京市公安局公安交通管理局',
+      published: '2018-06-15',
+      effective_from: '2019-11-01',
+      effective_to: null,
+      url: 'https://www.beijing.gov.cn/zhengce/gfxwj/sj/201905/t20190522_61309.html',
+      verified_at: VERIFIED_AT
+    },
+    corroborating: [
+      {
+        file: '进京通行证政策问答(首都之窗)',
+        article: '次数与有效期',
+        url: 'https://www.beijing.gov.cn/zhengce/zcjd/zcwd/jjtxz/',
+        verified_at: VERIFIED_AT
+      }
+    ],
+    elements: {
+      subject: '外省、区、市核发号牌(含临时号牌)载客汽车',
+      time: '自然年 1–12 月',
+      space: '同 permit-required',
+      action: '办理与停放',
+      exemptions: [],
+      exceptions: ['"进京通行证(六环外)"不限办理次数、每次 7 天(首都之窗办理指南)'],
+      year_limit: 12,
+      max_days: 7
+    },
+    penalty: {
+      basis: '京交发〔2018〕102 号第二条:无证或过期在支路等级以上城市道路停放的,按停放天数扣减当年可办理天数',
+      detail: '扣减当年可办理进京证天数',
+      verified_at: VERIFIED_AT,
+      url: 'https://www.beijing.gov.cn/zhengce/gfxwj/sj/201905/t20190522_61309.html'
+    },
+    confidence: 'high',
+    implemented: true
+  },
+  {
+    id: 'tail-number-9to17',
+    title: '外埠载客汽车工作日 9–17 时按尾号限行(五环含以内)',
+    source: {
+      file: '北京市人民政府关于实施工作日高峰时段区域限行交通管理措施的通告',
+      article: '第二条"外埠机动车限行"、第三条(尾号分组轮换)',
+      issuer: '北京市人民政府',
+      published: '2026-03-18',
+      effective_from: '2026-03-30',
+      effective_to: '2027-03-28',
+      url: 'https://www.beijing.gov.cn/zhengce/zhengcefagui/202603/t20260323_4564097.html',
+      verified_at: VERIFIED_AT
+    },
+    corroborating: [
+      {
+        file: '尾号限行问题?(北京交警官方问答)',
+        article: '当期轮换与处罚',
+        url: 'https://jtgl.beijing.gov.cn/jgj/qaknowledge/325750944/325731479/325731508/325753052/',
+        verified_at: VERIFIED_AT
+      },
+      {
+        file: '北京市人民政府关于实施工作日高峰时段区域限行交通管理措施的通告(2025 年版)',
+        article: '第三条(2025 年轮换表)',
+        url: 'https://www.beijing.gov.cn/zhengce/zhengcefagui/202503/t20250324_4041745.html',
+        verified_at: VERIFIED_AT
+      }
+    ],
+    elements: {
+      subject: '外省、区、市核发号牌(含临时号牌)载客汽车,非豁免车型',
+      time: '工作日 9:00-17:00',
+      space: '五环路(含)以内道路',
+      action: '在道路上行驶',
+      exemptions: ['豁免车型见 exempt-vehicles;外埠号牌新能源小客车不豁免'],
+      exceptions: ['周末、法定节假日、调休上班的周六日(见 workday-definition)'],
+      plate_note: '车牌尾号为英文字母的按 0 号管理;临时号牌按尾号数字限行',
+      periods: [
+        { from: '2025-03-31', to: '2025-06-29', tails: [[1, 6], [2, 7], [3, 8], [4, 9], [5, 0]] },
+        { from: '2025-06-30', to: '2025-09-28', tails: [[5, 0], [1, 6], [2, 7], [3, 8], [4, 9]] },
+        { from: '2025-09-29', to: '2025-12-28', tails: [[4, 9], [5, 0], [1, 6], [2, 7], [3, 8]] },
+        { from: '2025-12-29', to: '2026-03-29', tails: [[3, 8], [4, 9], [5, 0], [1, 6], [2, 7]] },
+        { from: '2026-03-30', to: '2026-06-28', tails: [[2, 7], [3, 8], [4, 9], [5, 0], [1, 6]] },
+        { from: '2026-06-29', to: '2026-09-27', tails: [[1, 6], [2, 7], [3, 8], [4, 9], [5, 0]] },
+        { from: '2026-09-28', to: '2026-12-27', tails: [[5, 0], [1, 6], [2, 7], [3, 8], [4, 9]] },
+        { from: '2026-12-28', to: '2027-03-28', tails: [[4, 9], [5, 0], [1, 6], [2, 7], [3, 8]] }
+      ]
+    },
+    penalty: {
+      basis: '北京交警官方问答:未按尾号限制通行',
+      detail: '处 100 元罚款,不记分',
+      verified_at: VERIFIED_AT,
+      url: 'https://jtgl.beijing.gov.cn/jgj/qaknowledge/325750944/325731479/325731508/325753052/'
+    },
+    confidence: 'high',
+    implemented: true
+  },
+  {
+    id: 'exempt-vehicles',
+    title: '豁免车型清单(引擎按"非豁免小型载客汽车"假设)',
+    source: {
+      file: '北京市人民政府关于实施工作日高峰时段区域限行交通管理措施的通告',
+      article: '第四条(不受限行车辆);外埠高峰豁免另见北京市公安局通告 2010 年第 18 号第三条',
+      issuer: '北京市人民政府',
+      published: '2026-03-18',
+      effective_from: '2026-03-30',
+      effective_to: '2027-03-28',
+      url: 'https://www.beijing.gov.cn/zhengce/zhengcefagui/202603/t20260323_4564097.html',
+      verified_at: VERIFIED_AT
+    },
+    corroborating: [
+      {
+        file: '新能源汽车需要遵守尾号限行规定吗(北京交警官方问答)',
+        article: '答复:仅本市纯电动小客车豁免;外省区市号牌新能源小客车进京需办理进京证并遵守相关禁限行规定',
+        url: 'https://jtgl.beijing.gov.cn/jgj/qaknowledge/325750944/325731508/325753046/index.html',
+        verified_at: VERIFIED_AT
+      }
+    ],
+    elements: {
+      subject: '—',
+      time: '—',
+      space: '—',
+      action: '—',
+      exemptions: ['警车、消防车、救护车、工程救险车', '公共电汽车、省际长途客运及大型客车、京 B 号段出租汽车(不含租赁)、邮政专用车、旅游客车营运证件车、核定班车校车', '行政执法与清障专用车、环卫园林道路养护应急通信专项作业车、殡仪馆殡葬车辆', '"使"字头号牌及经批准临时入境车辆', '纯电动小客车(以可充电电池为唯一动力来源;豁免的是本市号牌车)'],
+      exceptions: ['外省、区、市号牌新能源小客车:进京需办证并遵守全部禁限行规定,不豁免']
+    },
+    notes: '本引擎未建模车型选择,默认按非豁免小型载客汽车判断;若实际为豁免车型,本判断不适用。',
+    confidence: 'high',
+    implemented: true
+  },
+  {
+    id: 'ring2-all-day',
+    title: '全天禁止进入二环路(含)以内、建国门外大街、复兴门外大街、复兴路',
+    source: {
+      file: '外埠号牌机动车进京注意事项(北京交警专题)',
+      article: '禁限行规定',
+      issuer: '北京市公安局公安交通管理局',
+      published: null,
+      effective_from: null,
+      effective_to: null,
+      url: 'https://jtgl.beijing.gov.cn/jgj/lszt/659722/659725/index.html',
+      verified_at: VERIFIED_AT
+    },
+    elements: {
+      subject: '外省、区、市机动车(含载客汽车)',
+      time: '全天 24 小时',
+      space: '二环路(含)以内道路、建国门外大街、复兴门外大街、复兴路(木樨地桥至新兴桥段)',
+      action: '在道路上行驶',
+      exemptions: [],
+      exceptions: []
+    },
+    confidence: 'high',
+    implemented: false,
+    gap: '引擎无二环及上述道路的几何数据,未做逐点判断;目的地在二环内时,结论仅覆盖进京证与高峰/尾号,不含本条全天禁行。核实动作:对照现场禁行标志或导航 App 的限行提示。'
+  },
+  {
+    id: 'daxing-shunyi-peak',
+    title: '高峰期限行还包括大兴区、顺义区部分道路(顺义晚高峰 17–19 时)',
+    source: {
+      file: '外埠号牌机动车进京注意事项(北京交警专题)',
+      article: '禁限行规定 / 大兴区、顺义区限行范围',
+      issuer: '北京市公安局公安交通管理局',
+      published: null,
+      effective_from: null,
+      effective_to: null,
+      url: 'https://jtgl.beijing.gov.cn/jgj/lszt/659722/659725/index.html',
+      verified_at: VERIFIED_AT
+    },
+    corroborating: [
+      {
+        file: '顺义区人民政府限行范围公告',
+        article: '顺义区限行范围(晚高峰 17 时-19 时)',
+        url: 'https://www.bjshy.gov.cn/web/gggs/tzgg/1051770/index.html',
+        verified_at: VERIFIED_AT
+      }
+    ],
+    elements: {
+      subject: '外省、区、市核发号牌载客汽车',
+      time: '工作日 7:00-9:00、17:00-20:00(顺义区晚高峰为 17:00-19:00)',
+      space: '大兴区限行范围:京开高速西辅路(含)、南五环路(不含)、京良路南五环至芦求路之间路段(含)、芦求路(不含)、佟前路(含)、永华路(含)、兴华大街(含)、林校北路(含)围合区域以内道路;顺义区限行范围:白马路(不含)至左堤辅线(不含)至顺平路(不含)至东六环路(不含)至北六环路(不含)至京沈路(不含)围合区域以内道路',
+      action: '在道路上行驶',
+      exemptions: [],
+      exceptions: ['非工作日']
+    },
+    confidence: 'high',
+    implemented: false,
+    gap: '引擎无大兴/顺义限行区域的几何数据,未逐点判断(含五环外区域)。目的地若在上述范围,以现场标志与导航限行提示为准。'
+  },
+  {
+    id: 'yanqing-permit',
+    title: '延庆城区部分道路需办"进京通行证(六环内)"',
+    source: {
+      file: '进京通行证办理指南(首都之窗)',
+      article: '六环内进京证适用范围',
+      issuer: '北京市人民政府门户网站',
+      published: null,
+      effective_from: null,
+      effective_to: null,
+      url: 'https://www.beijing.gov.cn/fuwu/bmfw/bmzt/jjz/',
+      verified_at: VERIFIED_AT
+    },
+    elements: {
+      subject: '外省、区、市核发号牌载客汽车',
+      time: '全天',
+      space: '延庆城区部分道路',
+      action: '行驶',
+      exemptions: [],
+      exceptions: []
+    },
+    confidence: 'high',
+    implemented: false,
+    gap: '引擎未建模延庆部分道路范围;目的地在延庆城区时,按"六环外无需证"判断可能不适用,请以办理指南为准。'
+  },
+  {
+    id: 'subject-scope',
+    title: '适用主体:外埠号牌小型载客汽车(货车/摩托车另属其他体系)',
+    source: {
+      file: '关于对部分机动车采取交通管理措施降低污染物排放的通告(京交发〔2014〕29 号)',
+      article: '第二条',
+      issuer: '北京市交通委员会、北京市环境保护局、北京市公安局公安交通管理局',
+      published: '2014-03-28',
+      effective_from: '2014-04-11',
+      effective_to: null,
+      url: 'https://jtgl.beijing.gov.cn/jgj/jgxx/gsgg/jttg/bjsgajgajtgljtg/335248/index.html',
+      verified_at: VERIFIED_AT
+    },
+    elements: {
+      subject: '外埠号牌小型载客汽车(含临时号牌)',
+      time: '—',
+      space: '本市行政区域',
+      action: '—',
+      exemptions: [],
+      exceptions: ['载货汽车(每日 6-24 时禁入六环含以内等)、摩托车(禁入六环内)、危险品运输车不适用本引擎结论']
+    },
+    notes: '本引擎全部结论仅对上述主体成立;其他车型请另查对应规定。',
+    confidence: 'high',
+    implemented: true
+  }
+];
+
+function getRule(id) {
+  for (var i = 0; i < RULES.length; i++) if (RULES[i].id === id) return RULES[i];
+  return null;
+}
+/* 引擎参数从规则库派生,禁止再硬编码 */
+var PEAK_AM = getRule('peak-five-ring').elements.peak_am;   // [420, 540]
+var PEAK_PM = getRule('peak-five-ring').elements.peak_pm;   // [1020, 1200]
+var TAIL_PERIODS = getRule('tail-number-9to17').elements.periods;
+var PERMIT_YEAR_LIMIT = getRule('permit-quota').elements.year_limit;
+var PERMIT_MAX_DAYS = getRule('permit-quota').elements.max_days;
+
+/* 中国法定节假日与调休补班日
+ * 来源:国务院办公厅年度放假安排通知(2025、2026)。
+ * 格式:H=法定节假日休息日, W=调休补班日
+ * 依 workday-definition 规则:两者均为不限行日。
+ * 未内置年份自动退化为“仅按周末判断”,并在界面提示。 */
+var CN_CAL = {
+  // 2025
+  '2025-01-01': 'H|元旦',
+  '2025-01-26': 'W|春节前补班',
+  '2025-01-28': 'H|除夕',
+  '2025-01-29': 'H|初一',
+  '2025-01-30': 'H|初二',
+  '2025-01-31': 'H|初三',
+  '2025-02-01': 'H|初四',
+  '2025-02-02': 'H|初五',
+  '2025-02-03': 'H|初六',
+  '2025-02-04': 'H|初七',
+  '2025-02-08': 'W|春节后补班',
+  '2025-04-04': 'H|清明节',
+  '2025-04-05': 'H|清明节',
+  '2025-04-06': 'H|清明节',
+  '2025-04-27': 'W|劳动节前补班',
+  '2025-05-01': 'H|劳动节',
+  '2025-05-02': 'H|劳动节',
+  '2025-05-03': 'H|劳动节',
+  '2025-05-04': 'H|劳动节',
+  '2025-05-05': 'H|劳动节',
+  '2025-05-31': 'H|端午节',
+  '2025-06-01': 'H|端午节',
+  '2025-06-02': 'H|端午节',
+  '2025-09-28': 'W|国庆节前补班',
+  '2025-10-01': 'H|国庆节',
+  '2025-10-02': 'H|国庆节',
+  '2025-10-03': 'H|国庆节',
+  '2025-10-04': 'H|国庆节',
+  '2025-10-05': 'H|国庆节',
+  '2025-10-06': 'H|中秋节',
+  '2025-10-07': 'H|国庆节',
+  '2025-10-08': 'H|国庆节',
+  '2025-10-11': 'W|国庆节后补班',
+  // 2026
+  '2026-01-01': 'H|元旦',
+  '2026-01-02': 'H|元旦',
+  '2026-01-03': 'H|元旦',
+  '2026-01-04': 'W|元旦后补班',
+  '2026-02-14': 'W|春节前补班',
+  '2026-02-15': 'H|春节',
+  '2026-02-16': 'H|除夕',
+  '2026-02-17': 'H|初一',
+  '2026-02-18': 'H|初二',
+  '2026-02-19': 'H|初三',
+  '2026-02-20': 'H|初四',
+  '2026-02-21': 'H|初五',
+  '2026-02-22': 'H|初六',
+  '2026-02-23': 'H|初七',
+  '2026-02-28': 'W|春节后补班',
+  '2026-04-04': 'H|清明节',
+  '2026-04-05': 'H|清明节',
+  '2026-04-06': 'H|清明节',
+  '2026-05-01': 'H|劳动节',
+  '2026-05-02': 'H|劳动节',
+  '2026-05-03': 'H|劳动节',
+  '2026-05-04': 'H|劳动节',
+  '2026-05-05': 'H|劳动节',
+  '2026-05-09': 'W|劳动节后补班',
+  '2026-06-19': 'H|端午节',
+  '2026-06-20': 'H|端午节',
+  '2026-06-21': 'H|端午节',
+  '2026-09-20': 'W|中秋节前补班',
+  '2026-09-25': 'H|中秋节',
+  '2026-09-26': 'H|中秋节',
+  '2026-09-27': 'H|中秋节',
+  '2026-10-01': 'H|国庆节',
+  '2026-10-02': 'H|国庆节',
+  '2026-10-03': 'H|国庆节',
+  '2026-10-04': 'H|国庆节',
+  '2026-10-05': 'H|国庆节',
+  '2026-10-06': 'H|国庆节',
+  '2026-10-07': 'H|国庆节',
+  '2026-10-10': 'W|国庆节后补班'
+};
+
+/* ===== 边界数据(WGS-84) ===== */
+/* 五环路(OSM relation 295957,简化后 94 点,约 35m 容差)
+ * 数据 © OpenStreetMap contributors, ODbL 1.0 */
+var POLY_FIVE = [
+  [39.945007, 116.207451], [39.947681, 116.209048], [39.950478, 116.209897], [39.976242, 116.214671], [39.988779, 116.215338],
+  [39.992566, 116.217366], [39.994826, 116.221326], [39.997126, 116.232663], [40.000842, 116.242274], [40.002405, 116.260248],
+  [40.004115, 116.263358], [40.008848, 116.266736], [40.010574, 116.269795], [40.013556, 116.293483], [40.015535, 116.3014],
+  [40.018513, 116.319001], [40.021182, 116.327458], [40.021833, 116.331744], [40.020556, 116.427348], [40.019806, 116.432679],
+  [40.013956, 116.453022], [40.013744, 116.471395], [40.013045, 116.476106], [40.011468, 116.479883], [40.01007, 116.481733],
+  [39.987511, 116.503586], [39.975602, 116.513124], [39.967871, 116.518475], [39.953073, 116.525216], [39.943952, 116.533414],
+  [39.941034, 116.535321], [39.937248, 116.536299], [39.909674, 116.538171], [39.892181, 116.541489], [39.882693, 116.54271],
+  [39.873786, 116.542931], [39.862733, 116.542161], [39.854329, 116.543578], [39.850793, 116.543339], [39.84818, 116.541969],
+  [39.846162, 116.539906], [39.822014, 116.507473], [39.810573, 116.477276], [39.809011, 116.47432], [39.793891, 116.459501],
+  [39.791301, 116.456228], [39.789588, 116.450483], [39.789673, 116.438902], [39.789046, 116.433057], [39.787885, 116.429237],
+  [39.786255, 116.426199], [39.78426, 116.423737], [39.781198, 116.421231], [39.77147, 116.416926], [39.768009, 116.41454],
+  [39.7651, 116.410578], [39.763332, 116.405797], [39.757038, 116.378862], [39.756842, 116.374975], [39.757822, 116.372261],
+  [39.759431, 116.370548], [39.771726, 116.367145], [39.774352, 116.364966], [39.775565, 116.36229], [39.776191, 116.358967],
+  [39.778138, 116.32455], [39.780615, 116.302664], [39.779672, 116.296467], [39.774369, 116.286378], [39.772931, 116.282552],
+  [39.772395, 116.277999], [39.773031, 116.274112], [39.774034, 116.271621], [39.77596, 116.268943], [39.780429, 116.265976],
+  [39.796743, 116.260154], [39.805458, 116.259251], [39.811141, 116.256642], [39.827905, 116.242172], [39.82961, 116.239458],
+  [39.83277, 116.230249], [39.845748, 116.21762], [39.849249, 116.215403], [39.854741, 116.214473], [39.856988, 116.213581],
+  [39.865204, 116.207375], [39.872437, 116.202757], [39.876824, 116.201898], [39.880148, 116.202182], [39.8897, 116.205432],
+  [39.908021, 116.205078], [39.922626, 116.206196], [39.940528, 116.205868], [39.945007, 116.207451]
+];
+/* 六环路(OSM relation 295982,简化后 158 点,约 35m 容差)
+ * 数据 © OpenStreetMap contributors, ODbL 1.0 */
+var POLY_SIX = [
+  [40.034837, 116.101216], [40.037003, 116.102971], [40.040531, 116.107187], [40.04618, 116.11148], [40.054224, 116.122769],
+  [40.059285, 116.12841], [40.065283, 116.133645], [40.070249, 116.13702], [40.096907, 116.149102], [40.129203, 116.149113],
+  [40.133216, 116.149517], [40.13841, 116.151156], [40.142148, 116.153098], [40.153141, 116.160466], [40.156404, 116.163267],
+  [40.159435, 116.167075], [40.161185, 116.170288], [40.163954, 116.178783], [40.174661, 116.281135], [40.175152, 116.297388],
+  [40.173163, 116.314865], [40.164191, 116.350583], [40.156652, 116.398247], [40.156278, 116.410326], [40.158825, 116.432275],
+  [40.158696, 116.446942], [40.152051, 116.489223], [40.146949, 116.510498], [40.145617, 116.518565], [40.141629, 116.601636],
+  [40.140908, 116.606328], [40.139531, 116.609952], [40.136914, 116.613712], [40.134311, 116.615804], [40.131318, 116.617083],
+  [40.091719, 116.618557], [40.08808, 116.619586], [40.085145, 116.621202], [40.069295, 116.636598], [40.050874, 116.649421],
+  [40.042959, 116.653898], [40.022011, 116.663583], [40.016956, 116.666749], [40.01234, 116.670476], [40.009027, 116.672078],
+  [40.006831, 116.67454], [40.005012, 116.678719], [39.99373, 116.696104], [39.990063, 116.700573], [39.986076, 116.703239],
+  [39.982929, 116.70409], [39.97999, 116.704158], [39.959499, 116.698419], [39.950389, 116.697493], [39.942682, 116.698013],
+  [39.936767, 116.697612], [39.919807, 116.701763], [39.911086, 116.702635], [39.90306, 116.704774], [39.899737, 116.705034],
+  [39.890799, 116.704378], [39.880385, 116.702473], [39.866312, 116.696834], [39.854413, 116.690362], [39.847605, 116.685346],
+  [39.827736, 116.665695], [39.80138, 116.631673], [39.796715, 116.626418], [39.788497, 116.619597], [39.767082, 116.608389],
+  [39.764047, 116.605505], [39.761447, 116.602046], [39.757707, 116.593534], [39.754418, 116.573385], [39.746019, 116.553698],
+  [39.745277, 116.549008], [39.744844, 116.53303], [39.743615, 116.52823], [39.73913, 116.516296], [39.736764, 116.497966],
+  [39.734765, 116.491851], [39.729326, 116.479841], [39.72625, 116.46578], [39.723534, 116.44217], [39.721392, 116.432932],
+  [39.721323, 116.419413], [39.719513, 116.402558], [39.719792, 116.389433], [39.719406, 116.385423], [39.71812, 116.381813],
+  [39.708055, 116.361975], [39.703929, 116.351054], [39.702015, 116.342776], [39.697598, 116.315532], [39.69241, 116.300875],
+  [39.69101, 116.293198], [39.689627, 116.257351], [39.694822, 116.214113], [39.695043, 116.177669], [39.697781, 116.102831],
+  [39.699229, 116.098412], [39.700956, 116.095441], [39.703216, 116.092875], [39.706187, 116.090866], [39.709376, 116.089931],
+  [39.721967, 116.089454], [39.727974, 116.089982], [39.738623, 116.092551], [39.758055, 116.095351], [39.770567, 116.096179],
+  [39.773121, 116.097448], [39.775264, 116.099391], [39.779207, 116.105857], [39.781983, 116.108869], [39.785234, 116.110821],
+  [39.790815, 116.11251], [39.803468, 116.113007], [39.811706, 116.114704], [39.814898, 116.114808], [39.819398, 116.113669],
+  [39.826949, 116.109722], [39.830046, 116.109152], [39.833447, 116.109402], [39.837141, 116.11079], [39.840103, 116.112933],
+  [39.858688, 116.131744], [39.862533, 116.133537], [39.868807, 116.134503], [39.876709, 116.140888], [39.883027, 116.143356],
+  [39.888747, 116.146915], [39.89179, 116.147525], [39.894469, 116.147057], [39.896624, 116.145908], [39.910219, 116.136198],
+  [39.929369, 116.116141], [39.933252, 116.112831], [39.937136, 116.11099], [39.946345, 116.109519], [39.948862, 116.108542],
+  [39.953472, 116.104508], [39.959459, 116.101025], [39.965107, 116.094727], [39.967781, 116.093224], [39.975557, 116.091183],
+  [39.980293, 116.089214], [39.984476, 116.088738], [39.988651, 116.086952], [39.990868, 116.086814], [39.992942, 116.087637],
+  [39.994419, 116.088958], [40.002988, 116.101134], [40.007574, 116.10424], [40.009649, 116.104704], [40.011587, 116.104444],
+  [40.024079, 116.099572], [40.032024, 116.100269], [40.034837, 116.101216]
+];
+/* 通州区行政边界(OSM relation 2988902,简化后 100 点,约 500m 容差)
+ * 数据 © OpenStreetMap contributors, ODbL 1.0 */
+var POLY_TONGZHOU = [
+  [40.01649, 116.58917], [40.03062, 116.60832], [40.02137, 116.61417], [40.02454, 116.64504], [40.00721, 116.68043],
+  [40.01549, 116.67972], [40.01506, 116.69143], [40.02554, 116.70275], [40.01859, 116.71144], [40.0264, 116.73637],
+  [40.01417, 116.74928], [40.01458, 116.76674], [39.99167, 116.76945], [39.96192, 116.75114], [39.95364, 116.76304],
+  [39.95946, 116.7672], [39.93591, 116.78154], [39.88789, 116.77974], [39.87688, 116.79833], [39.88854, 116.80626],
+  [39.88019, 116.80706], [39.8765, 116.82111], [39.84255, 116.85996], [39.84457, 116.87772], [39.8295, 116.89895],
+  [39.84659, 116.89635], [39.84953, 116.90448], [39.83755, 116.91829], [39.8124, 116.92243], [39.80239, 116.93649],
+  [39.794, 116.9304], [39.78508, 116.94801], [39.77627, 116.93984], [39.7794, 116.91544], [39.76043, 116.90785],
+  [39.76259, 116.89593], [39.73027, 116.91074], [39.71752, 116.87674], [39.69467, 116.88748], [39.68635, 116.8839],
+  [39.68938, 116.89701], [39.68192, 116.90335], [39.67321, 116.89189], [39.66649, 116.84403], [39.65161, 116.84672],
+  [39.63714, 116.82112], [39.61596, 116.82949], [39.60951, 116.78386], [39.59533, 116.78427], [39.59205, 116.772],
+  [39.61265, 116.75667], [39.61613, 116.72749], [39.62826, 116.71568], [39.63743, 116.71804], [39.63647, 116.70434],
+  [39.64939, 116.69673], [39.67318, 116.69789], [39.67355, 116.66385], [39.6862, 116.66059], [39.68729, 116.64498],
+  [39.69986, 116.64022], [39.70747, 116.64733], [39.72727, 116.62146], [39.71135, 116.5948], [39.7087, 116.57159],
+  [39.71592, 116.52102], [39.72129, 116.53127], [39.7385, 116.52648], [39.74055, 116.53386], [39.74801, 116.51679],
+  [39.76562, 116.51413], [39.7601, 116.53412], [39.76703, 116.5301], [39.76758, 116.53915], [39.77733, 116.52455],
+  [39.77987, 116.53207], [39.78876, 116.52529], [39.80234, 116.53537], [39.83194, 116.52733], [39.83391, 116.56664],
+  [39.82373, 116.57783], [39.82357, 116.59242], [39.84867, 116.5983], [39.85985, 116.62139], [39.86773, 116.614],
+  [39.88928, 116.62227], [39.8885, 116.60994], [39.89435, 116.60916], [39.90318, 116.61807], [39.92193, 116.61516],
+  [39.92067, 116.62467], [39.92918, 116.61806], [39.93734, 116.62837], [39.94943, 116.62629], [39.94534, 116.63927],
+  [39.97938, 116.63497], [39.98258, 116.62717], [39.9925, 116.63783], [40.00662, 116.62218], [40.01649, 116.58917]
+];
+
+/* ===== 日期工具 ===== */
+function pad2(n) { return String(n).padStart(2, '0'); }
+function ymd(d) {
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+function hm(d) { return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+function minutesOfDay(d) { return d.getHours() * 60 + d.getMinutes(); }
+function parseYmd(s) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ''));
+  if (!m) return null;
+  var y = +m[1], mo = +m[2], day = +m[3];
+  var d = new Date(y, mo - 1, day);
+  if (d.getFullYear() !== y || d.getMonth() !== mo - 1 || d.getDate() !== day) return null;
+  return d;
+}
+function addDays(d, n) {
+  var x = new Date(d.getTime());
+  x.setDate(x.getDate() + n);
+  return x;
+}
+function atMinutes(d, mins) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), Math.floor(mins / 60), mins % 60, 0, 0);
+}
+function weekdayName(d) { return WEEK_NAMES[d.getDay()]; }
+function fmtCN(d) { return ymd(d) + ' ' + weekdayName(d); }
+
+/* ===== 节假日 / 工作日 ===== */
+function hasCalendarYear(year) {
+  var y = String(year);
+  return Object.keys(CN_CAL).some(function(k) { return k.slice(0, 4) === y; });
+}
+function dayInfo(date, override) {
+  if (override === 'holiday') return { rest: true, label: '法定节假日', name: '手动指定', manual: true };
+  // 依 workday-definition:调休上班的周六日不属于"工作日",不限行
+  if (override === 'workday') return { rest: true, label: '调休补班日(不限行)', name: '手动指定', manual: true };
+  var raw = CN_CAL[ymd(date)];
+  if (raw) {
+    var p = raw.split('|');
+    return {
+      rest: true,
+      label: p[0] === 'H' ? '法定节假日' : '调休补班日(不限行)',
+      name: p[1] || '',
+      manual: false
+    };
+  }
+  var dow = date.getDay();
+  var weekend = dow === 0 || dow === 6;
+  return { rest: weekend, label: weekend ? '周末' : '工作日', name: '', manual: false };
+}
+function peakOf(date, override) {
+  var di = dayInfo(date, override);
+  if (di.rest) return null;
+  var m = minutesOfDay(date);
+  if (m >= PEAK_AM[0] && m < PEAK_AM[1]) {
+    return { key: 'am', label: '早高峰 7:00-9:00', end: atMinutes(date, PEAK_AM[1]) };
+  }
+  if (m >= PEAK_PM[0] && m < PEAK_PM[1]) {
+    return { key: 'pm', label: '晚高峰 17:00-20:00', end: atMinutes(date, PEAK_PM[1]) };
+  }
+  return null;
+}
+function nextAllowedTime(date, override) {
+  var p = peakOf(date, override);
+  return p ? p.end : null;
+}
+
+/* ===== 尾号限行(tail-number-9to17) ===== */
+/* 当前时刻是否落入尾号限行窗口(工作日 9-17 时),与轮换表是否覆盖无关 */
+function tailApplicable(date, override) {
+  if (dayInfo(date, override).rest) return false;
+  var m = minutesOfDay(date);
+  if (m < 9 * 60 || m >= 17 * 60) return false;
+  var dow = date.getDay();
+  return dow >= 1 && dow <= 5;
+}
+/* 当日 9-17 时的限行尾号组(周一至周五各一组);非限行日/非 9-17 时返回 null */
+function tailGroupFor(date, override) {
+  if (!tailApplicable(date, override)) return null;
+  var dow = date.getDay();
+  var ds = ymd(date);
+  for (var i = 0; i < TAIL_PERIODS.length; i++) {
+    var p = TAIL_PERIODS[i];
+    if (ds >= p.from && ds <= p.to) return p.tails[dow - 1];
+  }
+  return null; // 轮换表未覆盖该日期
+}
+/* 车牌尾号归一:取最后一位;英文字母按 0 号管理 */
+function normalizePlate(plate) {
+  if (plate == null) return null;
+  var s = String(plate).trim().toUpperCase();
+  if (!s) return null;
+  var t = s.charAt(s.length - 1);
+  if (t >= '0' && t <= '9') return parseInt(t, 10);
+  if (t >= 'A' && t <= 'Z') return 0;
+  return null;
+}
+/* 返回:
+ *   null               —— 当前时刻/区域不适用尾号限行
+ *   {known:false}      —— 适用但未提供车牌尾号
+ *   {known:true,restricted:bool,group:[]} */
+function tailViolation(date, override, plate) {
+  var g = tailGroupFor(date, override);
+  if (!g) return null;
+  var p = normalizePlate(plate);
+  if (p == null) return { known: false, group: g, noTable: false };
+  return { known: true, restricted: g.indexOf(p) >= 0, group: g, noTable: false };
+}
+
+/* ===== 几何 ===== */
+function pointInPoly(poly, lat, lng) {
+  var inside = false;
+  for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    var xi = poly[i][1], yi = poly[i][0];
+    var xj = poly[j][1], yj = poly[j][0];
+    var intersect = ((yi > lat) !== (yj > lat)) &&
+      (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+function pointSegDistKm(lat1, lng1, lat2, lng2, lat0, lng0) {
+  var ky = 110.574;
+  var kx = 111.320 * Math.cos(lat0 * Math.PI / 180);
+  var x1 = lng1 * kx, y1 = lat1 * ky;
+  var x2 = lng2 * kx, y2 = lat2 * ky;
+  var x0 = lng0 * kx, y0 = lat0 * ky;
+  var dx = x2 - x1, dy = y2 - y1;
+  var len2 = dx * dx + dy * dy;
+  var t = len2 ? ((x0 - x1) * dx + (y0 - y1) * dy) / len2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  var nx = x1 + t * dx, ny = y1 + t * dy;
+  return Math.hypot(x0 - nx, y0 - ny);
+}
+function distToPoly(poly, lat, lng) {
+  var min = Infinity;
+  for (var i = 0; i < poly.length; i++) {
+    var a = poly[i], b = poly[(i + 1) % poly.length];
+    var d = pointSegDistKm(a[0], a[1], b[0], b[1], lat, lng);
+    if (d < min) min = d;
+  }
+  return min;
+}
+function nearestBoundary(lat, lng) {
+  var list = [
+    { name: '五环', km: distToPoly(POLY_FIVE, lat, lng) },
+    { name: '六环', km: distToPoly(POLY_SIX, lat, lng) },
+    { name: '通州', km: distToPoly(POLY_TONGZHOU, lat, lng) }
+  ];
+  list.sort(function(a, b) { return a.km - b.km; });
+  return list[0];
+}
+/* ===== 坐标系转换(WGS-84 ⇄ GCJ-02) =====
+ * 边界与地点均为 WGS-84;高德瓦片为 GCJ-02。
+ * 显示在高德底图上时转换为 GCJ-02,点击/拖动时再转换回 WGS-84,
+ * 保证判断始终使用同一套坐标。*/
+var GCJ_A = 6378245.0;
+var GCJ_EE = 0.00669342162296594323;
+function outOfChina(lat, lng) {
+  return lng < 72.004 || lng > 137.8347 || lat < 0.8293 || lat > 55.8271;
+}
+function transformLat(x, y) {
+  var ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+  ret += (20.0 * Math.sin(6.0 * x * Math.PI) + 20.0 * Math.sin(2.0 * x * Math.PI)) * 2.0 / 3.0;
+  ret += (20.0 * Math.sin(y * Math.PI) + 40.0 * Math.sin(y / 3.0 * Math.PI)) * 2.0 / 3.0;
+  ret += (160.0 * Math.sin(y / 12.0 * Math.PI) + 320 * Math.sin(y * Math.PI / 30.0)) * 2.0 / 3.0;
+  return ret;
+}
+function transformLng(x, y) {
+  var ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+  ret += (20.0 * Math.sin(6.0 * x * Math.PI) + 20.0 * Math.sin(2.0 * x * Math.PI)) * 2.0 / 3.0;
+  ret += (20.0 * Math.sin(x * Math.PI) + 40.0 * Math.sin(x / 3.0 * Math.PI)) * 2.0 / 3.0;
+  ret += (150.0 * Math.sin(x / 12.0 * Math.PI) + 300.0 * Math.sin(x / 30.0 * Math.PI)) * 2.0 / 3.0;
+  return ret;
+}
+function wgs2gcj(lat, lng) {
+  if (outOfChina(lat, lng)) return [lat, lng];
+  var dLat = transformLat(lng - 105.0, lat - 35.0);
+  var dLng = transformLng(lng - 105.0, lat - 35.0);
+  var radLat = lat / 180.0 * Math.PI;
+  var magic = Math.sin(radLat);
+  magic = 1 - GCJ_EE * magic * magic;
+  var sqrtMagic = Math.sqrt(magic);
+  dLat = (dLat * 180.0) / ((GCJ_A * (1 - GCJ_EE)) / (magic * sqrtMagic) * Math.PI);
+  dLng = (dLng * 180.0) / (GCJ_A / sqrtMagic * Math.cos(radLat) * Math.PI);
+  return [lat + dLat, lng + dLng];
+}
+function gcj2wgs(lat, lng) {
+  if (outOfChina(lat, lng)) return [lat, lng];
+  var wLat = lat, wLng = lng;
+  for (var i = 0; i < 8; i++) {
+    var g = wgs2gcj(wLat, wLng);
+    var dLat = g[0] - lat, dLng = g[1] - lng;
+    wLat -= dLat;
+    wLng -= dLng;
+    if (Math.abs(dLat) < 1e-10 && Math.abs(dLng) < 1e-10) break;
+  }
+  return [wLat, wLng];
+}
+
+function classifyZone(lat, lng) {
+  var inFive = pointInPoly(POLY_FIVE, lat, lng);
+  var inSix = pointInPoly(POLY_SIX, lat, lng);
+  var inTong = pointInPoly(POLY_TONGZHOU, lat, lng);
+  var zone, label;
+  if (inFive) { zone = 'five'; label = '五环内(含)'; }
+  else if (inTong) { zone = 'tong'; label = '通州全域'; }
+  else if (inSix) { zone = 'six'; label = '五环~六环之间'; }
+  else { zone = 'outside'; label = '六环外'; }
+  return { zone: zone, label: label, inFive: inFive, inSix: inSix, inTong: inTong };
+}
+
+/* ===== 进京证记录 ===== */
+function normalizeRecord(r) {
+  if (!r) return null;
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(r.date || ''));
+  var days = parseInt(r.days, 10);
+  if (!m || !days || days < 1 || days > 30) return null;
+  var d = parseYmd(r.date);
+  if (!d) return null;
+  return { date: ymd(d), days: days };
+}
+function recordEnd(r) {
+  return addDays(parseYmd(r.date), r.days - 1);
+}
+function coversDate(r, date) {
+  var d = ymd(date);
+  return d >= r.date && d <= ymd(recordEnd(r));
+}
+function rangesOverlap(a, b) {
+  return a.date <= ymd(recordEnd(b)) && b.date <= ymd(recordEnd(a));
+}
+function countYear(records, year) {
+  return (records || []).filter(function(r) { return r.date.slice(0, 4) === String(year); }).length;
+}
+function permitState(records, date, limit) {
+  var list = (records || []).map(normalizeRecord).filter(Boolean);
+  var year = date.getFullYear();
+  var used = countYear(list, year);
+  var left = Math.max(0, (limit || 12) - used);
+  var cover = list.filter(function(r) { return coversDate(r, date); });
+  if (cover.length) {
+    var ends = cover.map(recordEnd).sort(function(a, b) { return b - a; });
+    return { state: 'valid', end: ymd(ends[0]), used: used, left: left };
+  }
+  if (left <= 0) return { state: 'exhausted', end: null, used: used, left: 0 };
+  return { state: 'none', end: null, used: used, left: left };
+}
+
+/* ===== 合规结论 ===== */
+function relativeText(target, now) {
+  if (!(now instanceof Date) || isNaN(now.getTime())) return '';
+  var diff = target.getTime() - now.getTime();
+  if (diff <= 0) return '';
+  var mins = Math.round(diff / 60000);
+  if (mins < 60) return '(约 ' + mins + ' 分钟后)';
+  var h = Math.floor(mins / 60), m = mins % 60;
+  return '(约 ' + h + ' 小时' + (m ? ' ' + m + ' 分' : '') + '后)';
+}
+function analyze(lat, lng, date, opts) {
+  opts = opts || {};
+  var override = opts.override || 'auto';
+  var limit = parseInt(opts.limit, 10);
+  if (!(limit > 0)) limit = PERMIT_YEAR_LIMIT;
+  var plate = opts.plate == null ? '' : opts.plate;
+  var records = (opts.records || []).map(normalizeRecord).filter(Boolean);
+  var loc = classifyZone(lat, lng);
+  var di = dayInfo(date, override);
+  var peakTime = peakOf(date, override);
+  var peak = loc.inFive ? peakTime : null; // 只有五环内才受高峰限行约束
+  var tailWin = loc.inFive && tailApplicable(date, override);
+  var tail = tailWin ? tailViolation(date, override, plate) : null;
+  var near = nearestBoundary(lat, lng);
+  var uncertain = near.km < 2.5;
+  var year = date.getFullYear();
+  var used = countYear(records, year);
+  var left = Math.max(0, limit - used);
+  var cover = records.filter(function(r) { return coversDate(r, date); });
+  var permit = { state: 'none', end: null, used: used, left: left };
+  if (cover.length) {
+    var ends = cover.map(recordEnd).sort(function(a, b) { return b - a; });
+    permit.state = 'valid';
+    permit.end = ymd(ends[0]);
+  } else if (left <= 0) {
+    permit.state = 'exhausted';
+  }
+
+  var needPerm = loc.zone !== 'outside';
+  var tailBlocked = !!(tail && tail.known && tail.restricted);
+  var verdict, title, sub;
+  var lines = [];
+
+  lines.push(['区域', loc.label + ' · 距' + near.name + '边界约 ' + near.km.toFixed(1) + ' km']);
+  lines.push(['时段', weekdayName(date) + ' ' + hm(date) + ' · ' + di.label +
+    (di.name ? ' · ' + di.name : '') + ' · ' +
+    (peakTime ? peakTime.label + (loc.inFive ? '' : '(仅五环内限行)') : '非高峰')]);
+
+  if (tailWin) {
+    if (tail && tail.known) {
+      lines.push(['尾号限行', tail.restricted
+        ? '今日限行尾号 ' + tail.group.join('、') + '(9:00-17:00,五环含以内),你的尾号 ' +
+          normalizePlate(plate) + ' 在限行之列'
+        : '今日限行尾号 ' + tail.group.join('、') + '(9:00-17:00,五环含以内),你的尾号 ' +
+          normalizePlate(plate) + ' 不在其中']);
+    } else if (tail) {
+      lines.push(['尾号限行', '未输入车牌尾号,9:00-17:00 的尾号限行未判断;今日限行尾号 ' +
+        tail.group.join('、') + '(字母按 0 号管理)']);
+    } else {
+      lines.push(['尾号限行', '现行轮换表截至 2027-03-28,该日期未覆盖,请以最新通告核实']);
+    }
+  }
+
+  if (loc.zone === 'outside') {
+    if (uncertain) {
+      verdict = 'neutral';
+      title = '⚠ 靠近六环/通州边界,请核实';
+      sub = '边界经抽稀简化,可能误判;若实际在界内,需进京证并可能受限行约束';
+      lines.push(['风险', '该点距' + near.name + '边界仅约 ' + near.km.toFixed(1) + ' km,请用导航核实']);
+      lines.push(['进京证', '按简化边界判断为六环外;若实际在六环内/通州,须提前办理']);
+    } else {
+      verdict = 'ok';
+      title = '✅ 可正常通行';
+      sub = '六环外,无需进京证,也不受五环高峰限行约束';
+      lines.push(['进京证', '无需办理']);
+    }
+  } else if (peak) {
+    verdict = 'bad';
+    title = '🚫 高峰时段禁止通行';
+    sub = '工作日早晚高峰,外埠小客车禁入五环路(含)以内';
+    var next = peak.end;
+    var rel = relativeText(next, opts.now);
+    lines.push(['限行', '工作日' + peak.label + ',五环路(含)以内道路禁止外埠小客车通行']);
+    lines.push(['最早可通行', fmtCN(next) + ' ' + hm(next) + (rel ? ' ' + rel : '')]);
+    lines.push(['建议', hm(next) + ' 后进入五环内,或改乘公共交通']);
+  } else if (tailBlocked) {
+    verdict = 'bad';
+    title = '🚫 尾号限行时段禁止通行';
+    sub = '工作日 9:00-17:00,五环(含)以内按车牌尾号限行,你的尾号今日限行';
+    lines.push(['限行', '今日限行尾号 ' + tail.group.join('、') + ',9:00-17:00 五环(含)以内禁止通行']);
+    lines.push(['建议', '9:00 前或 17:00 后进入五环内,或改乘公共交通']);
+  } else if (permit.state === 'exhausted') {
+    verdict = 'bad';
+    title = '🚫 进京证次数已用完';
+    sub = year + ' 年已办理 ' + used + '/' + limit + ' 次,无法再进入限行范围';
+  } else if (permit.state === 'valid') {
+    verdict = 'ok';
+    title = '✅ 可通行(持有效进京证)';
+    sub = '计划日证件有效,有效期至 ' + permit.end;
+  } else {
+    verdict = 'permit';
+    title = '🟡 可通行,但需先办进京证';
+    sub = '计划日无有效证件,今年剩余 ' + left + ' 次';
+  }
+
+  if (needPerm) {
+    if (permit.state === 'valid') {
+      lines.push(['进京证', '计划日有效,有效期至 ' + permit.end]);
+    } else if (permit.state === 'exhausted') {
+      lines.push(['进京证', year + ' 年 ' + used + '/' + limit + ' 次已用完,无法再办理']);
+    } else {
+      lines.push(['进京证', '计划日无有效证件;请提前在「北京交警」APP / 交管12123 办理']);
+    }
+    lines.push(['年度次数', year + ' 年已用 ' + used + '/' + limit + ' 次']);
+    if (permit.state !== 'exhausted') {
+      lines.push(['注意', '进京证到期前须驶出六环内及通州全域,否则可能被处罚']);
+    }
+  }
+
+  if (loc.zone === 'six' || loc.zone === 'tong') {
+    lines.push(['高峰', '不在五环内,不受工作日早晚高峰限行约束']);
+  }
+  if (loc.inFive) {
+    lines.push(['未覆盖', '二环(含)以内全天禁行、大兴/顺义部分道路高峰限行未逐点判断(无几何数据),以现场标志与导航提示为准']);
+  }
+  if (uncertain && loc.zone !== 'outside') {
+    lines.push(['边界提醒', '距' + near.name + '边界约 ' + near.km.toFixed(1) + ' km,边界经简化可能误判,请核实实际线路']);
+  }
+  lines.push(['车辆假设', '外埠号牌非豁免小型载客汽车(豁免车型见规则库;外埠号牌新能源小客车不豁免)']);
+
+  /* 法源引用:本条结论实际依据的规则 */
+  var ruleIds = ['workday-definition', 'subject-scope', 'exempt-vehicles'];
+  if (loc.inFive) ruleIds.push('peak-five-ring', 'tail-number-9to17');
+  if (needPerm) ruleIds.push('permit-required', 'permit-quota');
+  var citations = ruleIds.map(getRule).filter(Boolean).map(function(r) {
+    return {
+      id: r.id, title: r.title, url: r.source.url, file: r.source.file,
+      article: r.source.article, verified_at: r.source.verified_at,
+      penalty: r.penalty || null
+    };
+  });
+  /* 处罚披露(结论为违规/需办证时) */
+  var penRule = null;
+  if (verdict === 'bad') penRule = getRule(peak ? 'peak-five-ring' : tailBlocked ? 'tail-number-9to17' : 'permit-quota');
+  else if (verdict === 'permit') penRule = getRule('permit-required');
+  if (penRule && penRule.penalty) {
+    lines.push(['处罚', penRule.penalty.detail + ' · ' + penRule.penalty.basis +
+      ' · 核对于 ' + penRule.penalty.verified_at]);
+  }
+  /* 未覆盖规则(仅披露,不参与判断) */
+  var gaps = RULES.filter(function(r) {
+    if (r.implemented) return false;
+    if (r.id === 'ring2-all-day') return loc.inFive;
+    if (r.id === 'daxing-shunyi-peak') return !di.rest;
+    return false;
+  }).map(function(r) { return { id: r.id, title: r.title, gap: r.gap }; });
+
+  return {
+    zone: loc.zone,
+    zoneLabel: loc.label,
+    inFive: loc.inFive,
+    inSix: loc.inSix,
+    inTong: loc.inTong,
+    needPerm: needPerm,
+    dayInfo: di,
+    workday: !di.rest,
+    peak: peak,
+    tail: tail,
+    tailBlocked: tailBlocked,
+    permit: permit,
+    used: used,
+    left: left,
+    limit: limit,
+    uncertain: uncertain,
+    near: near,
+    verdict: verdict,
+    title: title,
+    sub: sub,
+    lines: lines,
+    ruleIds: ruleIds,
+    citations: citations,
+    gaps: gaps,
+    nextAllowed: peak ? peak.end : null
+  };
+}
+
+/* ===== 路线体检 ===== */
+function distKm(a, b) {
+  var lat = (a[0] + b[0]) / 2 * Math.PI / 180;
+  return Math.hypot((a[1] - b[1]) * 111.320 * Math.cos(lat), (a[0] - b[0]) * 110.574);
+}
+function fmtClock(d) { return ymd(d).slice(5) + ' ' + hm(d); }
+function fmtRange(a, b) {
+  return (ymd(a) === ymd(b) ? hm(a) + '–' + hm(b) : fmtClock(a) + '–' + fmtClock(b));
+}
+
+/* 把路线折线按时间细分采样(默认 30 秒一个点) */
+function sampleRoute(vertices, stepSec) {
+  stepSec = stepSec || 30;
+  var out = [];
+  if (!vertices || !vertices.length) return out;
+  if (vertices.length === 1) {
+    return [{ lat: vertices[0].lat, lng: vertices[0].lng, t: vertices[0].t || 0 }];
+  }
+  for (var i = 0; i < vertices.length - 1; i++) {
+    var a = vertices[i], b = vertices[i + 1];
+    var dt = Math.max(0, (b.t || 0) - (a.t || 0));
+    var n = Math.max(1, Math.ceil(dt / stepSec));
+    for (var k = 0; k < n; k++) {
+      var r = k / n;
+      out.push({
+        lat: a.lat + (b.lat - a.lat) * r,
+        lng: a.lng + (b.lng - a.lng) * r,
+        t: (a.t || 0) + dt * r
+      });
+    }
+  }
+  var last = vertices[vertices.length - 1];
+  out.push({ lat: last.lat, lng: last.lng, t: last.t || 0 });
+  return out;
+}
+
+function routeSampleInfo(pt, departure, records, limit, override, plate) {
+  var time = new Date(departure.getTime() + (pt.t || 0) * 1000);
+  var loc = classifyZone(pt.lat, pt.lng);
+  var peakTime = peakOf(time, override);
+  var tail = loc.inFive ? tailViolation(time, override, plate) : null;
+  return {
+    lat: pt.lat, lng: pt.lng, t: pt.t || 0,
+    time: time, loc: loc,
+    peak: loc.inFive ? peakTime : null,
+    tail: tail,
+    tailBlocked: !!(tail && tail.known && tail.restricted),
+    ps: permitState(records, time, limit),
+    needPerm: loc.zone !== 'outside'
+  };
+}
+
+function evaluateRoute(samples, departure, opts) {
+  var records = opts.records || [];
+  var limit = opts.limit || PERMIT_YEAR_LIMIT;
+  var override = opts.override || 'auto';
+  var plate = opts.plate == null ? '' : opts.plate;
+  var parsed = samples.map(function(pt) {
+    return routeSampleInfo(pt, departure, records, limit, override, plate);
+  });
+
+  var peakConflict = parsed.some(function(x) { return !!x.peak; });
+  var tailConflict = parsed.some(function(x) { return x.tailBlocked; });
+  var tailUnknown = parsed.some(function(x) { return x.tail && !x.tail.known; });
+  var permitMissing = parsed.some(function(x) { return x.needPerm && x.ps.state === 'none'; });
+  var exhausted = parsed.some(function(x) { return x.needPerm && x.ps.state === 'exhausted'; });
+  var needPerm = parsed.some(function(x) { return x.needPerm; });
+
+  function ranges(flag) {
+    var res = [], cur = null;
+    parsed.forEach(function(x, i) {
+      var on = flag(x);
+      if (on && cur === null) cur = i;
+      if (!on && cur !== null) { res.push([cur, i - 1]); cur = null; }
+    });
+    if (cur !== null) res.push([cur, parsed.length - 1]);
+    return res;
+  }
+
+  var issues = [];
+  ranges(function(x) { return !!x.peak; }).forEach(function(r) {
+    var a = parsed[r[0]], b = parsed[r[1]];
+    issues.push({
+      kind: 'peak', label: '高峰限行',
+      text: fmtRange(a.time, b.time) + ' 在' + a.loc.label + ',' +
+        (a.peak.key === 'am' ? '工作日早高峰 7:00-9:00' : '工作日晚高峰 17:00-20:00') + '禁行'
+    });
+  });
+  ranges(function(x) { return x.tailBlocked; }).forEach(function(r) {
+    var a = parsed[r[0]], b = parsed[r[1]];
+    issues.push({
+      kind: 'tail', label: '尾号限行',
+      text: fmtRange(a.time, b.time) + ' 在' + a.loc.label + ',工作日 9:00-17:00 尾号限行,限行尾号 ' +
+        a.tail.group.join('、')
+    });
+  });
+  ranges(function(x) { return x.needPerm && x.ps.state === 'none'; }).forEach(function(r) {
+    var a = parsed[r[0]], b = parsed[r[1]];
+    issues.push({
+      kind: 'permit', label: '进京证',
+      text: fmtRange(a.time, b.time) + ' 进入' + a.loc.label + ',计划日无有效证件'
+    });
+  });
+  ranges(function(x) { return x.needPerm && x.ps.state === 'exhausted'; }).forEach(function(r) {
+    var a = parsed[r[0]], b = parsed[r[1]];
+    issues.push({
+      kind: 'exhausted', label: '进京证',
+      text: fmtRange(a.time, b.time) + ' 进入' + a.loc.label + ',本年度次数已用完'
+    });
+  });
+
+  var zoneSec = { five: 0, six: 0, tong: 0, outside: 0 };
+  for (var i = 0; i < parsed.length; i++) {
+    var gap = i + 1 < parsed.length ? Math.max(0, parsed[i + 1].t - parsed[i].t) : 0;
+    zoneSec[parsed[i].loc.zone] += gap;
+  }
+  var zoneLabel = parsed.some(function(x) { return x.loc.zone === 'five'; }) ? '五环内(含)'
+    : parsed.some(function(x) { return x.loc.zone === 'tong'; }) ? '通州全域'
+    : parsed.some(function(x) { return x.loc.zone === 'six'; }) ? '五环~六环之间' : '六环外';
+
+  var verdict, title, sub;
+  if (peakConflict) {
+    verdict = 'bad';
+    title = '🚫 路线在高峰时段进入五环';
+    sub = '按计划出发,会在工作日早晚高峰进入五环路(含)以内。可改出发时间、改走六环外路线,或改乘公共交通。';
+  } else if (tailConflict) {
+    verdict = 'bad';
+    title = '🚫 路线在尾号限行时段进入五环';
+    sub = '按计划出发,会在工作日 9:00-17:00 尾号限行时段进入五环(含)以内。可改出发时间或改乘公共交通。';
+  } else if (exhausted) {
+    verdict = 'bad';
+    title = '🚫 进京证次数已用完';
+    sub = '路线需要进入六环内或通州,但本年度额度已用完,无法再办理。';
+  } else if (permitMissing) {
+    verdict = 'permit';
+    title = '🟡 路线需提前办理进京证';
+    sub = '路线会进入六环内或通州,计划日没有有效进京证。办理后可通行,注意避开高峰时段。';
+  } else if (needPerm) {
+    verdict = 'ok';
+    title = '✅ 路线合规(持有效进京证)';
+    sub = '全程避开工作日高峰与尾号限行,且计划日进京证有效。';
+  } else {
+    verdict = 'ok';
+    title = '✅ 路线合规,无需进京证';
+    sub = '全程在六环外,不受五环高峰限行约束。';
+  }
+
+  var ruleIds = ['workday-definition', 'subject-scope', 'exempt-vehicles'];
+  if (parsed.some(function(x) { return x.loc.inFive; })) ruleIds.push('peak-five-ring', 'tail-number-9to17');
+  if (needPerm) ruleIds.push('permit-required', 'permit-quota');
+  var gaps = RULES.filter(function(r) {
+    if (r.implemented) return false;
+    if (r.id === 'ring2-all-day') return zoneLabel === '五环内(含)';
+    if (r.id === 'daxing-shunyi-peak') return true;
+    return false;
+  }).map(function(r) { return { id: r.id, title: r.title, gap: r.gap }; });
+
+  return {
+    verdict: verdict, title: title, sub: sub, issues: issues,
+    peakConflict: peakConflict, tailConflict: tailConflict, tailUnknown: tailUnknown,
+    permitMissing: permitMissing,
+    exhausted: exhausted, needPerm: needPerm,
+    zoneLabel: zoneLabel, zoneSec: zoneSec,
+    ruleIds: ruleIds, gaps: gaps,
+    sampleCount: parsed.length
+  };
+}
+
+function analyzeRoute(vertices, departure, opts) {
+  opts = opts || {};
+  var records = (opts.records || []).map(normalizeRecord).filter(Boolean);
+  var limit = parseInt(opts.limit, 10);
+  if (!(limit > 0)) limit = PERMIT_YEAR_LIMIT;
+  var override = opts.override || 'auto';
+  var plate = opts.plate == null ? '' : opts.plate;
+  var samples = sampleRoute(vertices, 30);
+  var ev = evaluateRoute(samples, departure, { records: records, limit: limit, override: override, plate: plate });
+
+  var distanceKm = 0;
+  for (var i = 1; i < vertices.length; i++) {
+    distanceKm += distKm(
+      [vertices[i - 1].lat, vertices[i - 1].lng],
+      [vertices[i].lat, vertices[i].lng]
+    );
+  }
+  var durationMin = vertices.length > 1
+    ? ((vertices[vertices.length - 1].t || 0) - (vertices[0].t || 0)) / 60
+    : 0;
+
+  var earliestLegal = null, earliestWithPermit = null;
+  if (ev.peakConflict || ev.tailConflict || ev.permitMissing || ev.exhausted) {
+    for (var step = 1; step <= 288; step++) { // 5 分钟 × 288 = 24 小时
+      var d = new Date(departure.getTime() + step * 5 * 60000);
+      var peak = false, miss = false, exh = false, tailB = false;
+      for (var j = 0; j < samples.length; j++) {
+        var info = routeSampleInfo(samples[j], d, records, limit, override, plate);
+        if (info.peak) peak = true;
+        if (info.tailBlocked) tailB = true;
+        if (info.needPerm) {
+          if (info.ps.state === 'none') miss = true;
+          if (info.ps.state === 'exhausted') exh = true;
+        }
+        if (peak && (miss || exh || tailB)) break;
+      }
+      if (!peak && !tailB && !miss && !exh && !earliestLegal) earliestLegal = d;
+      if (!peak && !tailB && !earliestWithPermit) earliestWithPermit = d;
+      if (earliestLegal && earliestWithPermit) break;
+    }
+  }
+
+  return {
+    verdict: ev.verdict, title: ev.title, sub: ev.sub,
+    issues: ev.issues, needPerm: ev.needPerm,
+    peakConflict: ev.peakConflict, tailConflict: ev.tailConflict,
+    tailUnknown: ev.tailUnknown, permitMissing: ev.permitMissing,
+    exhausted: ev.exhausted,
+    zoneLabel: ev.zoneLabel, zoneSec: ev.zoneSec,
+    ruleIds: ev.ruleIds, gaps: ev.gaps,
+    sampleCount: ev.sampleCount,
+    distanceKm: distanceKm, durationMin: durationMin,
+    earliestLegal: earliestLegal, earliestWithPermit: earliestWithPermit
+  };
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    POLICY_VERSION: POLICY_VERSION,
+    VERIFIED_AT: VERIFIED_AT,
+    RULES: RULES,
+    getRule: getRule,
+    PERMIT_YEAR_LIMIT: PERMIT_YEAR_LIMIT,
+    PERMIT_MAX_DAYS: PERMIT_MAX_DAYS,
+    CN_CAL: CN_CAL,
+    POLY_FIVE: POLY_FIVE,
+    POLY_SIX: POLY_SIX,
+    POLY_TONGZHOU: POLY_TONGZHOU,
+    pad2: pad2, ymd: ymd, hm: hm, parseYmd: parseYmd, addDays: addDays,
+    hasCalendarYear: hasCalendarYear, dayInfo: dayInfo, peakOf: peakOf,
+    nextAllowedTime: nextAllowedTime, pointInPoly: pointInPoly,
+    distToPoly: distToPoly, classifyZone: classifyZone,
+    wgs2gcj: wgs2gcj, gcj2wgs: gcj2wgs,
+    tailApplicable: tailApplicable, tailGroupFor: tailGroupFor,
+    normalizePlate: normalizePlate, tailViolation: tailViolation,
+    distKm: distKm, sampleRoute: sampleRoute, analyzeRoute: analyzeRoute,
+    normalizeRecord: normalizeRecord, recordEnd: recordEnd, coversDate: coversDate,
+    rangesOverlap: rangesOverlap, countYear: countYear, permitState: permitState,
+    analyze: analyze
+  };
+}
+/* ===== 纯逻辑:结束 ===== */
+/* =========================================================
+ * 应用层:状态 / 渲染 / 交互 / 地图
+ * ========================================================= */
+var LS = {
+  get: function(k, d) {
+    try {
+      var raw = localStorage.getItem(k);
+      if (raw == null) return d;
+      var v = JSON.parse(raw);
+      return v == null ? d : v;
+    } catch (e) { return d; }
+  },
+  set: function(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+    catch (e) { return false; }
+  }
+};
+function $(id) { return document.getElementById(id); }
+function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+var app = {
+  hasMap: false,
+  map: null,
+  marker: null,
+  layers: {},
+  tile: 'amap',
+  lat: null,
+  lng: null,
+  placeName: '',
+  records: [],
+  limit: 12,
+  favorites: [],
+  override: 'auto',
+  route: { start: null, end: null, picking: null, vertices: null, group: null },
+  lastResult: null
+};
+
+var toastTimer = null;
+function toast(msg) {
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2600);
+}
+
+function normalizeFavorites(list) {
+  if (!Array.isArray(list)) return [];
+  return list.map(function(f) {
+    if (!f) return null;
+    var lat = parseFloat(f.lat), lng = parseFloat(f.lng);
+    if (!isFinite(lat) || !isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+    var name = String(f.name || '').trim().slice(0, 20);
+    if (!name) return null;
+    return { name: name, lat: lat, lng: lng };
+  }).filter(Boolean).slice(0, 30);
+}
+
+function loadState() {
+  var recs = LS.get('jjz_records', []);
+  app.records = (Array.isArray(recs) ? recs : []).map(normalizeRecord).filter(Boolean).slice(0, 500);
+  var lim = parseInt(LS.get('jjz_limit', 12), 10);
+  app.limit = clamp(isFinite(lim) ? lim : 12, 1, 60);
+  app.favorites = normalizeFavorites(LS.get('jjz_favs', []));
+  var ov = LS.get('jjz_day_override', 'auto');
+  app.override = ['auto', 'holiday', 'workday'].indexOf(ov) >= 0 ? ov : 'auto';
+}
+
+function saveRecords() {
+  if (!LS.set('jjz_records', app.records)) toast('本地保存失败(可能是隐私模式或存储已满)');
+}
+function saveFavorites() { LS.set('jjz_favs', app.favorites); }
+
+var PRESETS = [
+  ['天安门', 39.9087, 116.3975],
+  ['国贸', 39.9087, 116.4612],
+  ['望京SOHO', 39.9963, 116.4801],
+  ['中关村', 39.9845, 116.3180],
+  ['北京南站', 39.8652, 116.3786],
+  ['北京西站', 39.8949, 116.3220],
+  ['颐和园', 39.9999, 116.2755],
+  ['首都机场T3', 40.0527, 116.6114],
+  ['大兴机场', 39.5086, 116.4109],
+  ['通州万达', 39.9060, 116.6460],
+  ['环球影城', 39.8550, 116.6740],
+  ['亦庄开发区', 39.7950, 116.5060],
+  ['昌平城区', 40.2207, 116.2312],
+  ['顺义城区', 40.1300, 116.6540],
+  ['房山良乡', 39.7360, 116.1430],
+  ['门头沟城区', 39.9400, 116.1010],
+  ['西二旗', 40.0530, 116.3060],
+  ['石景山万达', 39.9060, 116.2160]
+];
+
+function renderPresets() {
+  $('presetChips').innerHTML = PRESETS.map(function(p) {
+    return '<button class="chip" type="button" data-lat="' + p[1] + '" data-lng="' + p[2] +
+      '" data-name="' + esc(p[0]) + '">' + esc(p[0]) + '</button>';
+  }).join('');
+}
+
+function renderFavs() {
+  var box = $('favChips');
+  if (!app.favorites.length) {
+    box.hidden = true;
+    box.innerHTML = '';
+    return;
+  }
+  box.hidden = false;
+  box.innerHTML = app.favorites.map(function(f, i) {
+    return '<button class="chip" type="button" data-idx="' + i + '" data-lat="' + f.lat +
+      '" data-lng="' + f.lng + '" data-name="' + esc(f.name) + '" title="' + esc(f.name) + '">' +
+      '<span class="fav-star">★</span>' + esc(f.name) +
+      '<span class="fav-x" data-del="' + i + '" title="取消收藏">×</span></button>';
+  }).join('');
+}
+
+function defaultPlanTime() {
+  var d = new Date();
+  d.setSeconds(0, 0);
+  d.setMinutes(Math.ceil(d.getMinutes() / 5) * 5);
+  return d;
+}
+function setTimeInput(d) {
+  $('timeInput').value = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) +
+    'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+function readTimeInput() {
+  var v = $('timeInput').value;
+  if (!v) return new Date();
+  var d = new Date(v);
+  return isNaN(d.getTime()) ? new Date() : d;
+}
+
+function updateCoord() {
+  var c = $('coordDisplay');
+  if (app.lat == null || app.lng == null) {
+    c.textContent = '未选择';
+    c.title = '';
+    return;
+  }
+  c.textContent = (app.placeName ? app.placeName + ' · ' : '') +
+    app.lat.toFixed(5) + ', ' + app.lng.toFixed(5);
+  c.title = c.textContent;
+}
+
+function updateDayLine(date) {
+  var di = dayInfo(date, app.override);
+  var peak = peakOf(date, app.override);
+  var dayBadge = $('dayBadge');
+  dayBadge.textContent = fmtCN(date) + ' · ' + di.label + (di.name ? '(' + di.name + ')' : '');
+  dayBadge.className = 'tag' + (di.rest ? '' : ' ok');
+  var peakBadge = $('peakBadge');
+  peakBadge.textContent = peak ? peak.label : (di.rest ? '不限行' : '非高峰');
+  peakBadge.className = 'tag' + (peak ? ' bad' : '');
+  var note = $('calNote');
+  if (app.override !== 'auto') {
+    note.textContent = '当前为手动指定日期类型,自动日历判断已暂停。';
+  } else if (!hasCalendarYear(date.getFullYear())) {
+    note.textContent = '⚠ ' + date.getFullYear() + ' 年节假日数据未内置,当前仅按周末判断;可手动指定日期类型。';
+  } else {
+    note.textContent = '依据内置 2025–2026 年放假安排自动判断;调休补班日按工作日处理。';
+  }
+}
+
+function renderEmpty() {
+  var box = $('result');
+  box.className = 'neutral';
+  $('resultTags').innerHTML = '';
+  $('verdictText').textContent = '请选择目的地';
+  $('verdictSub').textContent = '点击地图、常用地点,或手动输入坐标';
+  $('verdictList').innerHTML = '';
+  $('zoneBadge').hidden = true;
+  if (app.map) $('mapTip').textContent = '点击地图设置目的地';
+  else $('mapTip').textContent = '地图不可用,请用左侧手动输入';
+}
+
+function plainTitle(t) {
+  return String(t || '').replace(/^[^\u4e00-\u9fa5A-Za-z0-9]+/, '');
+}
+
+function renderResult(r) {
+  var box = $('result');
+  box.className = r.verdict;
+  var tags = [
+    '<span class="tag">' + esc(r.zoneLabel) + '</span>',
+    r.needPerm
+      ? '<span class="tag warn">需进京证</span>'
+      : (r.uncertain ? '<span class="tag warn">可能需进京证</span>'
+        : '<span class="tag ok">无需进京证</span>')
+  ];
+  if (r.peak) tags.push('<span class="tag bad">' + esc(r.peak.label) + '</span>');
+  if (r.uncertain) tags.push('<span class="tag warn">边界待核实</span>');
+  $('resultTags').innerHTML = tags.join('');
+  $('verdictText').textContent = r.title;
+  $('verdictSub').textContent = r.sub;
+  $('verdictList').innerHTML = r.lines.map(function(l) {
+    return '<li><b>' + esc(l[0]) + ':</b> ' + esc(l[1]) + '</li>';
+  }).join('');
+
+  var zb = $('zoneBadge');
+  zb.hidden = false;
+  zb.textContent = r.zoneLabel;
+  zb.className = 'tag ' + (r.verdict === 'bad' ? 'bad' : r.verdict === 'ok' ? 'ok' : 'warn');
+
+  if (app.map) {
+    $('mapTip').textContent = r.zoneLabel + ' · ' + plainTitle(r.title);
+    if (app.marker) {
+      app.marker.bindTooltip(r.zoneLabel + ' · ' + plainTitle(r.title), {
+        permanent: true, direction: 'top', offset: [0, -16], className: 'pin-tip'
+      });
+      app.marker.openTooltip();
+    }
+  }
+}
+
+function renderPerm(date) {
+  var year = date.getFullYear();
+  var used = countYear(app.records, year);
+  var left = Math.max(0, app.limit - used);
+  var ps = permitState(app.records, date, app.limit);
+
+  $('permUsed').textContent = used;
+  $('permLeft').textContent = left;
+  var st = $('permStatus');
+  if (ps.state === 'valid') {
+    st.textContent = '有效';
+    st.title = '计划日证件有效期至 ' + ps.end;
+    st.style.color = 'var(--ok)';
+  } else if (ps.state === 'exhausted') {
+    st.textContent = '已用完';
+    st.title = '本年度次数已用完';
+    st.style.color = 'var(--bad)';
+  } else {
+    st.textContent = '未办理';
+    st.title = '计划日无有效证件';
+    st.style.color = 'var(--warn)';
+  }
+
+  var wrap = $('permBarWrap');
+  wrap.className = 'bar' + (left === 0 ? ' empty' : left <= 2 ? ' low' : '');
+  $('permBar').style.width = Math.min(100, used / app.limit * 100) + '%';
+  $('permHint').textContent = '统计 ' + year + ' 年 · 已用 ' + used + '/' + app.limit +
+    ' 次 · 每次最长 7 天' + (left === 0 ? ' · 今年次数已用完' : '') +
+    (ps.state === 'valid' ? ' · 计划日证件有效至 ' + ps.end : '');
+
+  renderPermList(date);
+}
+
+function renderPermList(date) {
+  var list = $('permList');
+  if (!app.records.length) {
+    list.innerHTML = '<div class="rec" style="color:var(--muted);justify-content:center;">还没有记录,办证后点「记录」</div>';
+    return;
+  }
+  var rows = app.records.map(function(r, i) { return { r: r, i: i }; });
+  rows.sort(function(a, b) { return b.r.date.localeCompare(a.r.date); });
+  list.innerHTML = rows.map(function(row) {
+    var r = row.r;
+    var end = ymd(recordEnd(r));
+    var covering = coversDate(r, date);
+    var status, cls;
+    if (covering) { status = '计划日生效'; cls = 'active'; }
+    else if (end < ymd(date)) { status = '已失效'; cls = 'expired'; }
+    else { status = '未生效'; cls = ''; }
+    var overlap = app.records.some(function(o, j) { return j !== row.i && rangesOverlap(r, o); });
+    return '<div class="rec"><div class="rec-info">' +
+      '<span>' + r.date + ' → ' + end + ' · ' + r.days + ' 天</span>' +
+      '<span class="rec-meta"><span class="rec-tag ' + cls + '">' + status + '</span>' +
+      (overlap ? '<span class="rec-tag overlap">与其它记录重叠</span>' : '') +
+      '</span></div>' +
+      '<button class="del" type="button" data-idx="' + row.i + '" title="删除">✕</button></div>';
+  }).join('');
+}
+
+function refresh() {
+  var date = readTimeInput();
+  updateDayLine(date);
+  renderPerm(date);
+  if (app.lat == null || app.lng == null) {
+    app.lastResult = null;
+    renderEmpty();
+    updateCoord();
+    return;
+  }
+  var r = analyze(app.lat, app.lng, date, {
+    records: app.records,
+    limit: app.limit,
+    override: app.override,
+    now: new Date()
+  });
+  app.lastResult = r;
+  renderResult(r);
+  updateCoord();
+}
+function toDisplay(lat, lng) {
+  return app.tile === 'amap' ? wgs2gcj(lat, lng) : [lat, lng];
+}
+function fromDisplay(lat, lng) {
+  return app.tile === 'amap' ? gcj2wgs(lat, lng) : [lat, lng];
+}
+
+function selectPoint(lat, lng, opts) {
+  opts = opts || {};
+  lat = parseFloat(lat);
+  lng = parseFloat(lng);
+  if (!isFinite(lat) || !isFinite(lng)) { toast('坐标无效'); return; }
+  app.route.picking = null;
+  if (app.map) app.map.getContainer().style.cursor = '';
+  app.lat = lat;
+  app.lng = lng;
+
+  if (app.map) {
+    var ll = toDisplay(lat, lng);
+    if (!app.marker) {
+      var icon = L.divIcon({
+        className: 'pin', html: '📍', iconSize: [26, 26], iconAnchor: [13, 24]
+      });
+      app.marker = L.marker(ll, { draggable: true, icon: icon }).addTo(app.map);
+      app.marker.on('dragend', function() {
+        var p = app.marker.getLatLng();
+        var w = fromDisplay(p.lat, p.lng);
+        app.placeName = '';
+        selectPoint(w[0], w[1]);
+      });
+    } else {
+      app.marker.setLatLng(ll);
+    }
+    if (opts.fly) app.map.setView(ll, Math.max(app.map.getZoom(), 13));
+    else if (!app.map.getBounds().contains(ll)) app.map.panTo(ll);
+  }
+  refresh();
+}
+
+function routePointText(p) {
+  if (!p) return '未设置';
+  return (p.name ? p.name + ' · ' : '') + p.lat.toFixed(5) + ', ' + p.lng.toFixed(5);
+}
+function renderRoutePoints() {
+  $('routeStartVal').textContent = routePointText(app.route.start);
+  $('routeEndVal').textContent = routePointText(app.route.end);
+}
+function setRoutePoint(which, lat, lng, name) {
+  lat = parseFloat(lat);
+  lng = parseFloat(lng);
+  if (!isFinite(lat) || !isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    toast('坐标无效');
+    return false;
+  }
+  app.route[which] = { lat: lat, lng: lng, name: String(name || '').slice(0, 30) };
+  app.route.vertices = null;
+  renderRoutePoints();
+  drawRouteGraphics();
+  return true;
+}
+
+function drawRouteGraphics() {
+  if (!app.map) return;
+  if (!app.route.group) app.route.group = L.layerGroup().addTo(app.map);
+  var g = app.route.group;
+  g.clearLayers();
+  var verts = app.route.vertices;
+  if (verts && verts.length > 1) {
+    L.polyline(verts.map(function(v) { return toDisplay(v.lat, v.lng); }), {
+      color: '#7c3aed', weight: 4, opacity: .75
+    }).addTo(g);
+  }
+  [['start', app.route.start, '#16a34a'], ['end', app.route.end, '#dc2626']].forEach(function(x) {
+    if (!x[1]) return;
+    L.circleMarker(toDisplay(x[1].lat, x[1].lng), {
+      radius: 6, color: '#fff', weight: 2, fillColor: x[2], fillOpacity: 1
+    }).bindTooltip(x[0] === 'start' ? '起点' : '终点').addTo(g);
+  });
+}
+
+function getAmapKey() {
+  return String($('amapKeyInput').value || LS.get('amap_key', '') || '').trim();
+}
+
+/* 高德驾车路线:返回 WGS-84 折线 + 每点累计耗时(秒) */
+function fetchDrivingRoute(start, end, key) {
+  var o = wgs2gcj(start.lat, start.lng);
+  var d = wgs2gcj(end.lat, end.lng);
+  var url = 'https://restapi.amap.com/v3/direction/driving?origin=' +
+    o[1].toFixed(6) + ',' + o[0].toFixed(6) +
+    '&destination=' + d[1].toFixed(6) + ',' + d[0].toFixed(6) +
+    '&extensions=base&strategy=0&key=' + encodeURIComponent(key);
+  return fetch(url).then(function(r) { return r.json(); }).then(function(j) {
+    if (String(j.status) !== '1') throw new Error(j.info || '路线规划失败');
+    var path = j.route && j.route.paths && j.route.paths[0];
+    if (!path) throw new Error('未找到可用路线');
+    var verts = [], t = 0, last = null;
+    (path.steps || []).forEach(function(step) {
+      var pts = String(step.polyline || '').split(';').map(function(s) {
+        var p = s.split(',');
+        return [parseFloat(p[1]), parseFloat(p[0])];
+      }).filter(function(p) { return isFinite(p[0]) && isFinite(p[1]); });
+      if (!pts.length) return;
+      var acc = [0], total = 0;
+      for (var i = 1; i < pts.length; i++) {
+        total += distKm(pts[i - 1], pts[i]);
+        acc.push(total);
+      }
+      var dur = parseFloat(step.duration) || 0;
+      pts.forEach(function(p, i) {
+        var ratio = total > 0 ? acc[i] / total : (pts.length > 1 ? i / (pts.length - 1) : 0);
+        var w = gcj2wgs(p[0], p[1]);
+        if (!last || distKm([last.lat, last.lng], w) >= 0.006) {
+          verts.push({ lat: w[0], lng: w[1], t: t + dur * ratio });
+          last = { lat: w[0], lng: w[1] };
+        }
+      });
+      t += dur;
+    });
+    if (verts.length < 2) throw new Error('路线点数不足');
+    var endW = gcj2wgs(d[0], d[1]);
+    if (!last || distKm([last.lat, last.lng], endW) > 0.002) {
+      verts.push({ lat: endW[0], lng: endW[1], t: parseFloat(path.duration) || t });
+    }
+    return {
+      vertices: verts,
+      distanceKm: (parseFloat(path.distance) || 0) / 1000,
+      durationMin: (parseFloat(path.duration) || t) / 60,
+      source: 'amap'
+    };
+  });
+}
+
+/* 无 Key / 请求失败时的直线估算:按 28km/h 均速,仅作粗略参考 */
+function straightRoute(a, b) {
+  var km = distKm([a.lat, a.lng], [b.lat, b.lng]);
+  var minutes = km / 28 * 60;
+  return {
+    vertices: [
+      { lat: a.lat, lng: a.lng, t: 0 },
+      { lat: b.lat, lng: b.lng, t: minutes * 60 }
+    ],
+    distanceKm: km,
+    durationMin: minutes,
+    source: 'straight'
+  };
+}
+
+function fmtDepart(d) {
+  var now = new Date();
+  return ymd(d) === ymd(now) ? hm(d) : ymd(d).slice(5) + ' ' + hm(d);
+}
+
+function renderRouteResult(r, route, departure) {
+  var box = $('routeResult');
+  box.hidden = false;
+  box.className = 'route-result ' + r.verdict;
+  var tags = [
+    '<span class="tag">' + (route.source === 'amap' ? '高德路线' : '直线估算') + '</span>',
+    '<span class="tag">' + route.distanceKm.toFixed(1) + ' km</span>',
+    '<span class="tag">约 ' + Math.max(1, Math.round(route.durationMin)) + ' 分钟</span>',
+    r.needPerm ? '<span class="tag warn">需进京证</span>' : '<span class="tag ok">无需进京证</span>'
+  ];
+  var arrival = new Date(departure.getTime() + route.durationMin * 60000);
+  var html = '<div class="tag-row" style="margin-bottom:6px;">' + tags.join('') + '</div>' +
+    '<div class="verdict">' + esc(r.title) + '</div>' +
+    '<div class="sub">' + esc(r.sub) + '</div>' +
+    '<ul><li><b>行程:</b> ' + esc(fmtDepart(departure)) + ' 出发,约 ' +
+    esc(fmtDepart(arrival)) + ' 到达</li>';
+  r.issues.forEach(function(x) {
+    html += '<li><b>' + esc(x.label) + ':</b> ' + esc(x.text) + '</li>';
+  });
+  html += '</ul>';
+
+  var actions = [];
+  if (r.peakConflict && r.earliestWithPermit) {
+    actions.push({
+      at: r.earliestWithPermit,
+      label: '出发改到 ' + fmtDepart(r.earliestWithPermit) + (r.permitMissing ? '(需办证)' : '')
+    });
+  } else if (r.earliestLegal) {
+    actions.push({ at: r.earliestLegal, label: '出发改到 ' + fmtDepart(r.earliestLegal) });
+  }
+  if (actions.length) {
+    html += '<div class="route-actions">' + actions.map(function(a) {
+      return '<button class="btn sm" type="button" data-depart="' +
+        esc(a.at.toISOString()) + '">' + esc(a.label) + '</button>';
+    }).join('') + '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function runRouteCheck() {
+  var st = app.route.start, en = app.route.end;
+  if (!st || !en) { toast('请先设置起点和终点'); return; }
+  if (!app.map) {
+    $('routeManual').open = true;
+    toast('地图不可用,已展开手动坐标输入');
+    return;
+  }
+  var key = getAmapKey();
+  var btn = $('routeCheckBtn');
+  btn.disabled = true;
+  btn.textContent = '规划中…';
+  var task;
+  if (key) {
+    task = fetchDrivingRoute(st, en, key).catch(function(e) {
+      toast('路线规划失败,改用直线估算:' + e.message);
+      return straightRoute(st, en);
+    });
+  } else {
+    task = Promise.resolve(straightRoute(st, en));
+  }
+  task.then(function(route) {
+    var departure = readTimeInput();
+    var res = analyzeRoute(route.vertices, departure, {
+      records: app.records, limit: app.limit, override: app.override
+    });
+    app.route.vertices = route.vertices;
+    drawRouteGraphics();
+    renderRouteResult(res, route, departure);
+  }).catch(function(e) {
+    toast('体检失败:' + e.message);
+  }).then(function() {
+    btn.disabled = false;
+    btn.textContent = '体检';
+  });
+}
+
+function initMap() {
+  if (app.hasMap) return;
+  app.hasMap = true;
+  var map = L.map('map', { zoomControl: true, minZoom: 9, maxZoom: 18 })
+    .setView([39.98, 116.42], 11);
+  app.map = map;
+
+  var amapLayer = L.tileLayer(
+    'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+    { subdomains: ['1', '2', '3', '4'], maxZoom: 19, attribution: '&copy; 高德地图' }
+  );
+  var osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; OpenStreetMap'
+  });
+  amapLayer.addTo(map);
+
+  function buildBoundaryLayers() {
+    var base = { weight: 2, fillOpacity: 0.07 };
+    function poly(src, color, tip) {
+      var pts = src.map(function(p) { return toDisplay(p[0], p[1]); });
+      return L.polygon(pts, Object.assign({}, base, { color: color })).bindTooltip(tip);
+    }
+    return {
+      five: poly(POLY_FIVE, '#dc2626', '五环路'),
+      six: poly(POLY_SIX, '#2563eb', '六环路'),
+      tong: poly(POLY_TONGZHOU, '#16a34a', '通州全域')
+    };
+  }
+
+  function rebuildBoundaryLayers() {
+    var vis = {
+      five: $('layerFive').checked,
+      six: $('layerSix').checked,
+      tong: $('layerTong').checked
+    };
+    Object.keys(app.layers).forEach(function(k) {
+      if (map.hasLayer(app.layers[k])) map.removeLayer(app.layers[k]);
+    });
+    app.layers = buildBoundaryLayers();
+    Object.keys(vis).forEach(function(k) {
+      if (vis[k]) app.layers[k].addTo(map);
+    });
+  }
+
+  app.layers = buildBoundaryLayers();
+  Object.keys(app.layers).forEach(function(k) { app.layers[k].addTo(map); });
+
+  function bindLayer(id, key) {
+    $(id).addEventListener('change', function() {
+      var layer = app.layers[key];
+      if (!layer) return;
+      if (this.checked) { if (!map.hasLayer(layer)) layer.addTo(map); }
+      else if (map.hasLayer(layer)) map.removeLayer(layer);
+    });
+  }
+  bindLayer('layerFive', 'five');
+  bindLayer('layerSix', 'six');
+  bindLayer('layerTong', 'tong');
+
+  document.querySelectorAll('input[name=tile]').forEach(function(r) {
+    r.addEventListener('change', function() {
+      if (this.value === 'amap') {
+        if (map.hasLayer(osmLayer)) map.removeLayer(osmLayer);
+        if (!map.hasLayer(amapLayer)) amapLayer.addTo(map);
+      } else {
+        if (map.hasLayer(amapLayer)) map.removeLayer(amapLayer);
+        if (!map.hasLayer(osmLayer)) osmLayer.addTo(map);
+      }
+      app.tile = this.value;
+      // 坐标系随底图切换:重建边界、重定位标记,判断数据（WGS-84）不变
+      rebuildBoundaryLayers();
+      if (app.marker && app.lat != null) app.marker.setLatLng(toDisplay(app.lat, app.lng));
+      drawRouteGraphics();
+    });
+  });
+
+  map.on('click', function(e) {
+    var w = fromDisplay(e.latlng.lat, e.latlng.lng);
+    if (app.route.picking) {
+      var which = app.route.picking;
+      app.route.picking = null;
+      map.getContainer().style.cursor = '';
+      setRoutePoint(which, w[0], w[1], which === 'start' ? '地图起点' : '地图终点');
+      toast('已设置' + (which === 'start' ? '起点' : '终点'));
+      return;
+    }
+    app.placeName = '';
+    selectPoint(w[0], w[1]);
+  });
+
+  map.zoomControl.setPosition('topright');
+  L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
+
+  if (app.lat != null && app.lng != null) {
+    selectPoint(app.lat, app.lng, { fly: true });
+  } else {
+    $('mapTip').textContent = '点击地图设置目的地';
+  }
+  drawRouteGraphics();
+}
+
+function initNoMap() {
+  app.hasMap = false;
+  $('mapFallback').hidden = false;
+  $('mapTip').hidden = true;
+  $('mapLegend').hidden = true;
+  $('manualDetails').open = true;
+}
+
+function bindEvents() {
+  $('presetChips').addEventListener('click', function(e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    app.placeName = b.dataset.name || '';
+    selectPoint(parseFloat(b.dataset.lat), parseFloat(b.dataset.lng), { fly: true });
+  });
+
+  $('favChips').addEventListener('click', function(e) {
+    var x = e.target.closest('[data-del]');
+    if (x) {
+      e.stopPropagation();
+      var i = parseInt(x.dataset.del, 10);
+      app.favorites.splice(i, 1);
+      saveFavorites();
+      renderFavs();
+      toast('已取消收藏');
+      return;
+    }
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    var f = app.favorites[parseInt(b.dataset.idx, 10)];
+    if (!f) return;
+    app.placeName = f.name;
+    selectPoint(f.lat, f.lng, { fly: true });
+  });
+
+  $('favBtn').addEventListener('click', function() {
+    if (app.lat == null) { toast('请先选择目的地'); return; }
+    var form = $('favForm');
+    form.hidden = !form.hidden;
+    if (!form.hidden) {
+      var inp = $('favName');
+      inp.value = app.placeName || ('地点 ' + (app.favorites.length + 1));
+      inp.focus();
+      inp.select();
+    }
+  });
+
+  function saveFav() {
+    if (app.lat == null) { toast('请先选择目的地'); return; }
+    var name = $('favName').value.trim();
+    if (!name) { toast('请输入收藏名称'); return; }
+    if (app.favorites.length >= 30) { toast('收藏已达上限(30 个)'); return; }
+    app.favorites.push({ name: name.slice(0, 20), lat: app.lat, lng: app.lng });
+    saveFavorites();
+    renderFavs();
+    $('favForm').hidden = true;
+    toast('已收藏:' + name);
+  }
+  $('favSave').addEventListener('click', saveFav);
+  $('favName').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') saveFav();
+  });
+
+  $('manualBtn').addEventListener('click', function() {
+    var lat = parseFloat($('manualLat').value);
+    var lng = parseFloat($('manualLng').value);
+    if (!isFinite(lat) || !isFinite(lng)) { toast('请输入有效经纬度'); return; }
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) { toast('经纬度超出范围'); return; }
+    app.placeName = '手动坐标';
+    selectPoint(lat, lng, { fly: true });
+    if (lat < 39 || lat > 41 || lng < 115 || lng > 118) {
+      toast('该坐标不在北京范围,结果可能为六环外');
+    }
+  });
+
+  $('useNow').addEventListener('click', function() {
+    var btn = this;
+    if (!navigator.geolocation) { toast('当前浏览器不支持定位'); return; }
+    btn.disabled = true;
+    btn.textContent = '定位中…';
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      app.placeName = '当前位置';
+      selectPoint(pos.coords.latitude, pos.coords.longitude, { fly: true });
+      toast('已定位到当前位置');
+      btn.disabled = false;
+      btn.textContent = '📡 定位';
+    }, function(err) {
+      btn.disabled = false;
+      btn.textContent = '📡 定位';
+      toast(err && err.code === 1
+        ? '定位失败:请允许定位权限(本地文件可能被浏览器限制)'
+        : '定位失败:请检查网络,或使用手动输入');
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+  });
+
+  var savedKey = LS.get('amap_key', '');
+  if (typeof savedKey === 'string' && savedKey) {
+    $('amapKeyInput').value = savedKey;
+    $('searchRow').hidden = false;
+  }
+  $('saveKeyBtn').addEventListener('click', function() {
+    var k = $('amapKeyInput').value.trim();
+    if (!k) { toast('请填写高德 Key'); return; }
+    LS.set('amap_key', k);
+    $('searchRow').hidden = false;
+    toast('Key 已保存');
+  });
+
+  $('geoBtn').addEventListener('click', function() {
+    var addr = $('geoInput').value.trim();
+    var key = ($('amapKeyInput').value || '').trim();
+    if (!addr) { toast('请输入地址'); return; }
+    if (!key) { toast('请先填写高德 Web 服务 Key'); return; }
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = '搜索中';
+    fetch('https://restapi.amap.com/v3/geocode/geo?address=' +
+      encodeURIComponent(addr) + '&key=' + encodeURIComponent(key))
+      .then(function(r) { return r.json(); })
+      .then(function(j) {
+        if (String(j.status) !== '1') throw new Error(j.info || '请求失败');
+        var g = j.geocodes && j.geocodes[0];
+        if (!g) throw new Error('未找到该地址');
+        var parts = String(g.location).split(',');
+        var lng = parseFloat(parts[0]);
+        var lat = parseFloat(parts[1]);
+        if (!isFinite(lat) || !isFinite(lng)) throw new Error('坐标解析失败');
+        app.placeName = String(g.formatted_address || addr).slice(0, 40);
+        if (app.map) app.map.setView([lat, lng], 14);
+        selectPoint(lat, lng, { fly: true });
+        toast('已定位:' + app.placeName);
+      })
+      .catch(function(e) { toast('搜索失败:' + e.message); })
+      .then(function() { btn.disabled = false; btn.textContent = '搜索'; });
+  });
+
+  // ===== 路线合规体检 =====
+  function pickRoutePoint(which) {
+    if (!app.map) {
+      $('routeManual').open = true;
+      toast('地图不可用,请用下方手动坐标输入');
+      return;
+    }
+    app.route.picking = which;
+    app.map.getContainer().style.cursor = 'crosshair';
+    toast('请在地图上点选' + (which === 'start' ? '起点' : '终点'));
+  }
+  $('pickStartBtn').addEventListener('click', function() { pickRoutePoint('start'); });
+  $('pickEndBtn').addEventListener('click', function() { pickRoutePoint('end'); });
+
+  $('routeUseDest').addEventListener('click', function() {
+    if (app.lat == null) { toast('请先在地图或常用地点选择目的地'); return; }
+    setRoutePoint('end', app.lat, app.lng, app.placeName || '当前点');
+    toast('终点已设为当前点');
+  });
+
+  $('routeUseNow').addEventListener('click', function() {
+    var btn = this;
+    if (!navigator.geolocation) { toast('当前浏览器不支持定位'); return; }
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      setRoutePoint('start', pos.coords.latitude, pos.coords.longitude, '当前位置');
+      toast('起点已设为当前位置');
+      btn.disabled = false;
+    }, function() {
+      btn.disabled = false;
+      toast('定位失败,请用地图选点或手动坐标');
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+  });
+
+  $('routeStartManualBtn').addEventListener('click', function() {
+    if (setRoutePoint('start', $('routeStartLat').value, $('routeStartLng').value, '手动起点')) {
+      toast('已设置起点');
+    }
+  });
+  $('routeEndManualBtn').addEventListener('click', function() {
+    if (setRoutePoint('end', $('routeEndLat').value, $('routeEndLng').value, '手动终点')) {
+      toast('已设置终点');
+    }
+  });
+
+  $('routeCheckBtn').addEventListener('click', runRouteCheck);
+
+  $('routeResult').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-depart]');
+    if (!b) return;
+    var d = new Date(b.dataset.depart);
+    if (isNaN(d.getTime())) return;
+    setTimeInput(d);
+    refresh();
+    runRouteCheck();
+    toast('已改为 ' + fmtDepart(d) + ' 出发');
+  });
+
+  if (getAmapKey()) {
+    $('routeHint').textContent = '出发时间取「计划时间」;将使用高德驾车路线,沿路线逐段判断。';
+  }
+
+  document.querySelectorAll('[data-quick]').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var q = b.dataset.quick;
+      if (q === 'now') {
+        setTimeInput(defaultPlanTime());
+        refresh();
+      } else if (q === 'tomorrow-am') {
+        var d = addDays(new Date(), 1);
+        d.setHours(8, 0, 0, 0);
+        setTimeInput(d);
+        refresh();
+        toast('已设为明天 8:00(早高峰)');
+      } else if (q === 'next') {
+        if (app.lat == null) { toast('请先选择目的地'); return; }
+        var date = readTimeInput();
+        var r = analyze(app.lat, app.lng, date, {
+          records: app.records, limit: app.limit, override: app.override, now: new Date()
+        });
+        if (r.permit.state === 'exhausted') {
+          toast('今年进京证次数已用完,换时间也无法进入');
+        } else if (r.nextAllowed) {
+          setTimeInput(r.nextAllowed);
+          refresh();
+          toast('已跳到 ' + hm(r.nextAllowed) + ',高峰结束后');
+        } else {
+          toast(r.needPerm ? '当前时段可通行,但需先办进京证' : '当前时段可正常通行');
+        }
+      }
+    });
+  });
+
+  $('timeInput').addEventListener('input', refresh);
+  $('timeInput').addEventListener('change', refresh);
+
+  $('dayOverride').addEventListener('change', function() {
+    app.override = this.value;
+    LS.set('jjz_day_override', app.override);
+    refresh();
+  });
+
+  $('limitInput').addEventListener('change', function() {
+    var v = parseInt(this.value, 10);
+    if (!(v > 0)) { this.value = app.limit; return; }
+    app.limit = clamp(v, 1, 60);
+    this.value = app.limit;
+    LS.set('jjz_limit', app.limit);
+    refresh();
+  });
+
+  function addPermit(dateStr, days, silent) {
+    var rec = normalizeRecord({ date: dateStr, days: days });
+    if (!rec) { toast('日期或有效天数无效'); return false; }
+    var overlap = app.records.some(function(o) { return rangesOverlap(o, rec); });
+    app.records.push(rec);
+    saveRecords();
+    refresh();
+    if (!silent) toast(overlap ? '已记录(与已有记录时间重叠,可能浪费次数)' : '已记录进京证');
+    return true;
+  }
+
+  $('addPermBtn').addEventListener('click', function() {
+    var d = $('permDateInput').value;
+    var days = parseInt($('permDaysInput').value, 10) || 7;
+    if (!d) { toast('请选择办理日期'); return; }
+    days = clamp(days, 1, 7);
+    $('permDaysInput').value = days;
+    addPermit(d, days);
+  });
+
+  $('renewBtn').addEventListener('click', function() {
+    var start = new Date();
+    start.setHours(0, 0, 0, 0);
+    var latestEnd = null;
+    app.records.forEach(function(r) {
+      var e = recordEnd(r);
+      if (!latestEnd || e > latestEnd) latestEnd = e;
+    });
+    if (latestEnd) {
+      var next = addDays(latestEnd, 1);
+      if (next > start) start = next;
+    }
+    var ds = ymd(start);
+    if (app.records.some(function(r) { return r.date === ds && r.days === 7; })) {
+      toast('该日期已有 7 天记录');
+      return;
+    }
+    addPermit(ds, 7, true);
+    toast('已添加 ' + ds + ' 起 7 天');
+  });
+
+  $('permList').addEventListener('click', function(e) {
+    var b = e.target.closest('.del');
+    if (!b) return;
+    var i = parseInt(b.dataset.idx, 10);
+    if (!app.records[i]) return;
+    app.records.splice(i, 1);
+    saveRecords();
+    refresh();
+    toast('已删除记录');
+  });
+
+  $('clearBtn').addEventListener('click', function() {
+    if (!app.records.length) { toast('没有记录'); return; }
+    if (!confirm('确定清空全部进京证记录?此操作不可撤销。')) return;
+    app.records = [];
+    saveRecords();
+    refresh();
+    toast('已清空记录');
+  });
+
+  $('exportBtn').addEventListener('click', function() {
+    var data = {
+      app: 'beijing-driving-helper',
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      limit: app.limit,
+      records: app.records,
+      favorites: app.favorites
+    };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'jjz-backup-' + ymd(new Date()) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
+    toast('已导出备份文件');
+  });
+
+  $('importBtn').addEventListener('click', function() { $('importFile').click(); });
+  $('importFile').addEventListener('change', function() {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+      try {
+        var d = JSON.parse(reader.result);
+        if (!d || !Array.isArray(d.records)) throw new Error('不是本工具的备份文件');
+        if (!confirm('导入将覆盖当前进京证记录与收藏,继续?')) return;
+        app.records = d.records.map(normalizeRecord).filter(Boolean).slice(0, 500);
+        if (d.limit > 0) app.limit = clamp(parseInt(d.limit, 10), 1, 60);
+        if (Array.isArray(d.favorites)) app.favorites = normalizeFavorites(d.favorites);
+        LS.set('jjz_records', app.records);
+        LS.set('jjz_limit', app.limit);
+        LS.set('jjz_favs', app.favorites);
+        $('limitInput').value = app.limit;
+        renderFavs();
+        refresh();
+        toast('导入成功');
+      } catch (e) {
+        toast('导入失败:' + e.message);
+      }
+    };
+    reader.readAsText(f);
+    this.value = '';
+  });
+}
+
+function init() {
+  loadState();
+  renderPresets();
+  renderFavs();
+  setTimeInput(defaultPlanTime());
+  $('policyBadge').textContent = '政策版 ' + POLICY_VERSION.slice(0, 7);
+  $('dayOverride').value = app.override;
+  $('limitInput').value = app.limit;
+  $('permDateInput').value = ymd(new Date());
+  bindEvents();
+  refresh();
+}
+
+init();
+
+/* ===== Leaflet 加载(多 CDN 回退,失败则降级为手动输入) ===== */
+(function loadLeaflet() {
+  var cdnJs = [
+    'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js',
+    'https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js',
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+  ];
+  var cdnCss = [
+    'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css',
+    'https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.css',
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+  ];
+  var i = 0;
+  var booted = false;
+  function addCss(list, idx) {
+    if (idx >= list.length) return;
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = list[idx];
+    l.onerror = function() {
+      if (l.parentNode) l.parentNode.removeChild(l);
+      addCss(list, idx + 1);
+    };
+    document.head.appendChild(l);
+  }
+  function addJs() {
+    if (i >= cdnJs.length) { boot(false); return; }
+    var s = document.createElement('script');
+    s.src = cdnJs[i++];
+    s.onload = function() { poll(0); };
+    s.onerror = function() { addJs(); };
+    document.head.appendChild(s);
+  }
+  function poll(n) {
+    if (window.L) { boot(true); return; }
+    if (n > 120) { boot(false); return; }
+    setTimeout(function() { poll(n + 1); }, 100);
+  }
+  function boot(ok) {
+    if (booted) return;
+    booted = true;
+    if (ok && window.L) {
+      try { initMap(); } catch (e) { console.error(e); initNoMap(); }
+    } else {
+      initNoMap();
+    }
+  }
+  addCss(cdnCss, 0);
+  addJs();
+})();
+</script>
+<!-- AICode End -->
+</body>
+</html>
