@@ -10,6 +10,12 @@
 - 对抗性测试与边界情况
 - 自动评估器与人工评估混合
 
+## 目录内文档
+
+| 文档 | 主题 |
+|------|------|
+| [`method-agent-evaluation-metrics.md`](./method-agent-evaluation-metrics.md) | **评估 Agent 全解**：四维度指标（完成度/效率/鲁棒性/安全）+ 端到端vs分解 + 自动vs人工 + GAIA/SWE-bench/AgentBench 基准 + Effect Size |
+
 ## 核心资源
 
 - `agent-frameworks/` — 框架评估工具

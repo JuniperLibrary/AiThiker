@@ -10,6 +10,12 @@
 - 共识与投票机制
 - 冲突检测与解决
 
+## 目录内文档
+
+| 文档 | 主题 |
+|------|------|
+| [`coordination-patterns.md`](./coordination-patterns.md) | **多 Agent 协作模式**：Supervisor（老板）/ Peer（对等）/ Hierarchical（分层）三模式对比 + 选型决策框架 + BondSeek Sub-Agent 工具化包装落地 |
+
 ## 核心资源
 
 - `agent-architecture/` — 基础架构参考
