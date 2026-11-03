@@ -14,6 +14,14 @@
 
 ---
 
+## 第 0 题：什么是 Agent（必考送分题，但分水岭）
+
+> **几乎所有 Agent 面试的第一题。** 答到"决策权在模型手里"才是懂行。见专项文档：
+
+📄 [面试必答 0 号题：什么是 Agent（五层递进回答框架）](./what-is-agent.md)
+
+---
+
 ## 第一梯队：已覆盖可直接作答 ✅
 
 | # | 面试题 | 答案素材所在文档 |
@@ -26,31 +34,34 @@
 | 6 | **记忆什么时候写入、什么时候读取？** | [`patterns/case-study-bondseek-user-memory.md`](../patterns/case-study-bondseek-user-memory.md) §8 触发时机 |
 | 7 | **LangChain 和 LangGraph 有什么区别？** | [`topics/agent-frameworks/compare-langchain-langgraph.md`](../topics/agent-frameworks/compare-langchain-langgraph.md) |
 
-## 第二梯队：BondSeek 有设计、待整理成文 💡
+## 第二梯队：BondSeek 有设计、已全部沉淀成文 ✅（#8-13）
 
-| # | 面试题 | BondSeek 对应设计（素材位置） |
-|---|--------|------------------------------|
-| 8 | **RAG 检索流程怎么设计？**（召回→融合→重排→生成） | `bondseek-common/rag/retriever/retriever.go`：query 重写 → 三路并行 → RRF 融合 → Rerank → Decay |
-| 9 | **多 Agent 怎么编排？** | `bondseek-agent/internal/agents/aistudio/subagents/orchestrator.go`：编排器 + 子 Agent + 上下文隔离 |
-| 10 | **SSE 流式对话断线如何恢复？** | `agentcore/open_block_store.go` + `replay_log_store.go` + `wss_hydrator.go` |
-| 11 | **如何降低模型幻觉？** | RAG Deep 模式自反思：充分性检查 → 幻觉检测 → 有用性评估三重循环 |
-| 12 | **Agent 系统怎么做可观测性？** | `t_agent_memory_drops` / `t_agent_memory_history` 审计 + ClickHouse 指标 |
-| 13 | **微服务下 Agent 系统怎么拆分？** | 5 服务拆法：system（用户）/ agent（对话）/ data（RAG）/ sandbox（执行）/ common（共享） |
+| # | 面试题 | 答案素材所在文档 |
+|---|--------|----------------|
+| 8 | **RAG 检索流程怎么设计？**（召回→融合→重排→生成） | [`patterns/case-study-bondseek-rag.md`](../patterns/case-study-bondseek-rag.md)：query 扩展 → 三路并行 → RRF 融合 → Rerank → Decay → 分区裁剪 |
+| 9 | **多 Agent 怎么编排？** | [`patterns/case-study-bondseek-multi-agent.md`](../patterns/case-study-bondseek-multi-agent.md)：Supervisor 模式、SubAgent 工具化包装、统一引擎、动态提示词 |
+| 10 | **SSE 流式对话断线如何恢复？** | [`patterns/case-study-bondseek-sse-recovery.md`](../patterns/case-study-bondseek-sse-recovery.md)：事件序号(seq) + Replay Log 回放 + 水位线去重 |
+| 11 | **如何降低模型幻觉？** | [`patterns/case-study-bondseek-hallucination.md`](../patterns/case-study-bondseek-hallucination.md)：自反思三重循环（充分性→幻觉→有用性）+ 引用治理 + 重新生成 |
+| 12 | **Agent 系统怎么做可观测性？** | [`patterns/case-study-bondseek-observability.md`](../patterns/case-study-bondseek-observability.md)：审计日志 + 工具调用树 + ClickHouse 指标 + 三层模型 |
+| 13 | **微服务下 Agent 系统怎么拆分？** | [`patterns/case-study-bondseek-microservices.md`](../patterns/case-study-bondseek-microservices.md)：业务边界 + 数据所有权（表前缀）+ EventBus 快慢线 + 网关 ForwardAuth |
 
-## 第三梯队：知识库待填充 🚧
+## 第三梯队：已全部覆盖 ✅（#14-17）
 
-| # | 面试题 | 说明 |
-|---|--------|------|
-| 14 | **ReAct / Plan-and-Execute / Reflection 三种范式对比** | 认知架构基础题，`topics/agent-architecture/` 仅入口无内容 |
-| 15 | **函数调用（Function Calling / Tool Calling）原理** | `topics/tool-use/` 仅入口无内容 |
-| 16 | **多 Agent 协作模式（Supervisor / Peer / Hierarchical）** | `topics/multi-agent-systems/` 仅入口无内容 |
-| 17 | **评估 Agent 有哪些指标？** | `topics/evaluation-and-benchmarks/` 仅入口无内容 |
+| # | 面试题 | 答案素材所在文档 |
+|---|--------|----------------|
+| 14 | **ReAct / Plan-and-Execute / Reflection 三种范式对比** | [`topics/agent-architecture/cognitive-architecture-paradigms.md`](../topics/agent-architecture/cognitive-architecture-paradigms.md)：三大范式对比 + 生产组合拳 + 30 秒面试框架 |
+| 15 | **函数调用（Function Calling / Tool Calling）原理** | [`topics/tool-use/function-calling.md`](../topics/tool-use/function-calling.md)：工具三要素 + 调用闭环 + BondSeek Go 落地 + 工程坑（防死循环/错误处理/上下文污染） |
+| 16 | **多 Agent 协作模式（Supervisor / Peer / Hierarchical）** | [`topics/multi-agent-systems/coordination-patterns.md`](../topics/multi-agent-systems/coordination-patterns.md)：三模式对比 + 选型决策框架 + Sub-Agent 工具化包装落地 + 30 秒面试框架 |
+| 17 | **评估 Agent 有哪些指标？** | [`topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md`](../topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md)：四维度指标 + 端到端/分解 + 自动/人工 + GAIA 等基准 + Effect Size |
+| 18 | **Tool 执行失败怎么处理？（如网络异常）** | [`topics/tool-use/function-calling.md`](../topics/tool-use/function-calling.md) §6：先分类（网络=重试/参数=自改/业务=降级/安全=拒绝）+ 失败是给模型的 Observation + BondSeek 落地 + 追问防御 |
 
 ---
 
 ## 📈 复习进度跟踪
 
 > 复习完一道题在对应行前打 ☑️，形成进度条。
+
+- ☐ #0 什么是 Agent — [专项回答框架](./what-is-agent.md)
 
 - ☐ #1 Context vs Memory
 - ☐ #2 上下文窗口溢出
@@ -59,16 +70,19 @@
 - ☐ #5 用户画像设计
 - ☐ #6 记忆触发时机
 - ☐ #7 LangChain vs LangGraph
-- ☐ #8 RAG 检索流程 *(待整理)*
-- ☐ #9 多 Agent 编排 *(待整理)*
-- ☐ #10 SSE 断线恢复 *(待整理)*
-- ☐ #11 防幻觉 *(待整理)*
-- ☐ #12 可观测性 *(待整理)*
-- ☐ #13 微服务拆分 *(待整理)*
-- ☐ #14 认知架构范式 *(待写)*
-- ☐ #15 工具调用 *(待写)*
-- ☐ #16 多 Agent 模式 *(待写)*
-- ☐ #17 评估指标 *(待写)*
+- ☑️ #8 RAG 检索流程 — [RAG 案例文档](../patterns/case-study-bondseek-rag.md)
+- ☑️ #9 多 Agent 编排 — [Multi-Agent 案例文档](../patterns/case-study-bondseek-multi-agent.md)
+- ☑️ #10 SSE 断线恢复 — [SSE 案例文档](../patterns/case-study-bondseek-sse-recovery.md)
+- ☑️ #11 防幻觉 — [防幻觉案例文档](../patterns/case-study-bondseek-hallucination.md)
+- ☑️ #12 可观测性 — [可观测性案例文档](../patterns/case-study-bondseek-observability.md)
+- ☑️ #13 微服务拆分 — [微服务案例文档](../patterns/case-study-bondseek-microservices.md)
+- ☑️ #14 认知架构范式 — [认知架构范式文档](../topics/agent-architecture/cognitive-architecture-paradigms.md)
+- ☑️ #15 工具调用 — [函数调用原理文档](../topics/tool-use/function-calling.md)
+- ☑️ #16 多 Agent 模式 — [多 Agent 协作模式文档](../topics/multi-agent-systems/coordination-patterns.md)
+- ☑️ #17 评估指标 — [评估 Agent 全解文档](../topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md)
+- ☑️ #18 工具失败处理 — [函数调用原理文档](../topics/tool-use/function-calling.md) §6
+
+> 🎉 **#0~#18 全部 19 题已覆盖** — 知识库可作为完整求职复习体系。
 
 ---
 
