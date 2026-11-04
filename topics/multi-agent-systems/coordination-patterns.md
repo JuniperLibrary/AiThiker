@@ -11,7 +11,7 @@ status: draft
 > **这是什么:** 多个 AI Agent 怎么分工协作——**Supervisor**（老板-员工）、**Peer**（对等协作）、**Hierarchical**（分层管理）三种架构模式的对比与选型。面试题 #16 的答案素材。
 > **为什么重要:** 单 Agent 有认知天花板（一个模型一个角色、一个上下文窗口），多 Agent 把任务拆给"不同专家"并行做——但"怎么组织一群 Agent"是架构决策，选错模式协作就崩。
 > **本文定位:** 理论为主，但**每个模式都结合 BondSeek 生产实例**看落地——你会看到"模式不是背概念，而是解决真实协作问题的套路"。
-> **关联案例:** [多 Agent 编排](../patterns/case-study-bondseek-multi-agent.md) | [认知架构范式](./cognitive-architecture-paradigms.md) | [函数调用原理](./function-calling.md)（SubAgent 工具化的前提）| [可观测性](../patterns/case-study-bondseek-observability.md)（调用树）
+> **关联案例:** [多 Agent 编排](../../patterns/case-study-bondseek-multi-agent.md) | [认知架构范式](../agent-architecture/cognitive-architecture-paradigms.md) | [函数调用原理](../tool-use/function-calling.md)（SubAgent 工具化的前提）| [可观测性](../../patterns/case-study-bondseek-observability.md)（调用树）
 
 ## 📌 名词速查表（先看这里）
 
@@ -138,7 +138,7 @@ BondSeek 的编排（orchestrator）就是 Supervisor 模式的实战样板，�
 
 > **为什么"工具化包装"是神来之笔**：它把"多 Agent 编排"降维成"工具调用"——**主 Agent 不需要新的编排机制，用的是已有的工具循环**；专家之间的交互被收窄成"各干各的、只传结果"，彻底避免"一群 Agent 互相聊晕"的 Peer 式失控。
 
-> 📎 深挖：`case-study-bondseek-multi-agent.md` §SubAgent 工具化包装 + §统一 ExecutionEngine
+> 📎 深挖：[`case-study-bondseek-multi-agent.md`](../../patterns/case-study-bondseek-multi-agent.md) §SubAgent 工具化包装 + §统一 ExecutionEngine
 
 ---
 
@@ -281,8 +281,8 @@ sequenceDiagram
 
 ## 关联文档
 
-- [`case-study-bondseek-multi-agent.md`](../patterns/case-study-bondseek-multi-agent.md) — Supervisor + 工具化包装 + 统一 ExecutionEngine 的生产实例
-- [`cognitive-architecture-paradigms.md`](./cognitive-architecture-paradigms.md) — 范式与多 Agent 的关系（编排层的 Plan 思想）
-- [`function-calling.md`](./function-calling.md) — Sub-Agent 工具化实现的机制基础（工具调用接口）
-- [`case-study-bondseek-observability.md`](../patterns/case-study-bondseek-observability.md) — 工具调用树（多 Agent 协作留痕可视化）
-- [`notes/agent-interview-questions.md`](../notes/agent-interview-questions.md) — 面试话题索引（第 16 题）
+- [`case-study-bondseek-multi-agent.md`](../../patterns/case-study-bondseek-multi-agent.md) — Supervisor + 工具化包装 + 统一 ExecutionEngine 的生产实例
+- [`cognitive-architecture-paradigms.md`](../agent-architecture/cognitive-architecture-paradigms.md) — 范式与多 Agent 的关系（编排层的 Plan 思想）
+- [`function-calling.md`](../tool-use/function-calling.md) — Sub-Agent 工具化实现的机制基础（工具调用接口）
+- [`case-study-bondseek-observability.md`](../../patterns/case-study-bondseek-observability.md) — 工具调用树（多 Agent 协作留痕可视化）
+- [`notes/agent-interview-questions.md`](../../notes/agent-interview-questions.md) — 面试话题索引（第 16 题）

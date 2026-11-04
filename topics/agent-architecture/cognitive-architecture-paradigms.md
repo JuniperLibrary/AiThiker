@@ -11,7 +11,7 @@ status: draft
 > **这是什么:** 认知架构（Cognitive Architecture）三大范式对比——**ReAct**（边想边做）、**Plan-and-Execute**（先计划后执行）、**Reflection**（先做后审）。它们回答同一个问题："Agent 的'思考'和'行动'如何组织？"
 > **为什么重要:** 面试官问"你用的 Agent 是哪种范式"——不是考名词，是考你**知不知道自己在用什么编排方式、为什么选它**。三种范式不是互斥的，**生产系统通常是组合拳**。
 > **本文定位:** 面试题 #14 的答案素材（第三梯队首题）。配合 BondSeek 案例看"生产里范式怎么落地"。
-> **关联案例:** [多 Agent 编排](../patterns/case-study-bondseek-multi-agent.md) | [防幻觉体系](../patterns/case-study-bondseek-hallucination.md) | [RAG 检索](../patterns/case-study-bondseek-rag.md) | 总纲 [`from-zero-to-agent.md`](./from-zero-to-agent.md)
+> **关联案例:** [多 Agent 编排](../../patterns/case-study-bondseek-multi-agent.md) | [防幻觉体系](../../patterns/case-study-bondseek-hallucination.md) | [RAG 检索](../../patterns/case-study-bondseek-rag.md) | 总纲 [`from-zero-to-agent.md`](./from-zero-to-agent.md)
 
 ## 📌 名词速查表（先看这里）
 
@@ -102,7 +102,7 @@ Action: Final Answer
 
 **ReAct 是"循环兜底"**——落到 BondSeek，就是多 Agent 案例里的**统一执行引擎**：循环只写一遍，通过不同的系统提示词 + 工具集 + 轮数上限构建不同角色。**你不需要为每个 Agent 重新写循环——ReAct 循环本身是共享的，换的是"提示词 + 工具"这套插件。**
 
-> 📎 深挖：`case-study-bondseek-multi-agent.md` §统一 ExecutionEngine
+> 📎 深挖：[`case-study-bondseek-multi-agent.md`](../../patterns/case-study-bondseek-multi-agent.md) §统一 ExecutionEngine
 
 ---
 
@@ -176,7 +176,7 @@ Plan-and-Execute 模式：
 - **代码生成**：写码后"自己 review 再交"——能抓到大量低级错误
 - **低错误容忍业务**：金融/医疗，答错代价高
 
-> 📎 深挖：`case-study-bondseek-hallucination.md` —— 自反思三重循环（充分性→幻觉→有用性），检测不合格就"把问题反馈给模型重新生成"
+> 📎 深挖：[`case-study-bondseek-hallucination.md`](../../patterns/case-study-bondseek-hallucination.md) —— 自反思三重循环（充分性→幻觉→有用性），检测不合格就"把问题反馈给模型重新生成"
 
 ---
 
@@ -263,8 +263,8 @@ BondSeek 的实际组合就是一个活例子：
 
 ## 关联文档
 
-- [`case-study-bondseek-hallucination.md`](../patterns/case-study-bondseek-hallucination.md) — Reflection 的完整落地（自反思三重循环 + 重新生成）
-- [`case-study-bondseek-multi-agent.md`](../patterns/case-study-bondseek-multi-agent.md) — ReAct 循环的落地（统一 ExecutionEngine）+ Plan 思想（Supervisor 委派）
+- [`case-study-bondseek-hallucination.md`](../../patterns/case-study-bondseek-hallucination.md) — Reflection 的完整落地（自反思三重循环 + 重新生成）
+- [`case-study-bondseek-multi-agent.md`](../../patterns/case-study-bondseek-multi-agent.md) — ReAct 循环的落地（统一 ExecutionEngine）+ Plan 思想（Supervisor 委派）
 - [`from-zero-to-agent.md`](./from-zero-to-agent.md) — 总纲：⑦ 防失败（Reflection）、⑩ 红线纪律（范式与大原则的关系）
-- [`case-study-bondseek-rag.md`](../patterns/case-study-bondseek-rag.md) — ReAct 循环里 Action 的典型形态（检索工具）
-- [`notes/agent-interview-questions.md`](../notes/agent-interview-questions.md) — 面试话题索引（第 14 题）
+- [`case-study-bondseek-rag.md`](../../patterns/case-study-bondseek-rag.md) — ReAct 循环里 Action 的典型形态（检索工具）
+- [`notes/agent-interview-questions.md`](../../notes/agent-interview-questions.md) — 面试话题索引（第 14 题）

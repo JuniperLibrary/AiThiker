@@ -1,6 +1,6 @@
 ﻿# llm-reasoning -- LLM 推理机制
 
-**路径:** 	opics/llm-reasoning/
+**路径:** topics/llm-reasoning/
 **作用:** 分析 LLM 的推理机制，包括 Chain-of-Thought、Tree-of-Thought、Self-Consistency、Reflection 等技术。
 
 ## 关键文档
@@ -8,11 +8,11 @@
 | 文件 | 内容 |
 |------|------|
 | index.md | 推理机制总览与分类 |
-| chain-of-thought.md | CoT 提示、Zero-shot CoT、Auto-CoT |
-| 	ree-of-thought.md | ToT 搜索策略（BFS/DFS）、评估函数 |
-| self-consistency.md | 多路径采样与投票聚合 |
-| eflection.md | 自我反思、错误修正、Critique 模式 |
-| experiments/ | 本地实验记录（位于 experiments/reasoning/）|
+| chain-of-thought.md | CoT 提示、Zero-shot CoT、Auto-CoT（计划，未创建） |
+| tree-of-thought.md | ToT 搜索策略（BFS/DFS）、评估函数（计划，未创建） |
+| self-consistency.md | 多路径采样与投票聚合（计划，未创建） |
+| reflection.md | 自我反思、错误修正、Critique 模式（计划，未创建） |
+| experiments/ | 本地实验记录（位于 ../../experiments/；reasoning 子目录：计划，未创建）|
 
 ## 推理示例规范
 
@@ -32,8 +32,8 @@
 
 ## 搜索指引
 
-- **论文引用:** 查看 esources/reasoning-papers.md
-- **实验记录:** experiments/reasoning/ 下的日期前缀 .md 文件
+- **论文引用:** 查看 resources/papers.md（原 reasoning-papers.md 合并至此）
+- **实验记录:** ../../experiments/ 下的日期前缀 .md 文件（reasoning 子目录：计划，未创建）
 - **实现对比:** index.md 中的 Comparison 表格
 
 ## 质量检查
@@ -41,4 +41,4 @@
 - [ ] 每个推理方法包含至少一个带步骤标记的示例
 - [ ] 对比不同方法的优劣势
 - [ ] 实验记录附带超参数配置
-- [ ] 指向 esources/ 中的原始论文
+- [ ] 指向 resources/ 中的原始论文

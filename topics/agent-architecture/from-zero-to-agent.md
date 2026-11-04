@@ -11,7 +11,7 @@ status: draft
 > **这是什么:** AiThiker 的"总纲文档"——用**一次对话的完整旅程**做叙事主线，把散落在各案例里的知识串成一张图。
 > **为什么先读这篇:** 单篇案例是"零件说明书"，这篇是"装配图"。先有整体骨架，零件才有位置感。
 > **阅读方式:** 顺着故事走，每站回答三个问题——**遇到了什么冲突？BondSeek 怎么解决？付了什么代价？**
-> **关联案例:** [记忆系统](../patterns/case-study-bondseek-memory.md) | [用户画像](../patterns/case-study-bondseek-user-memory.md) | [RAG 检索](../patterns/case-study-bondseek-rag.md) | [多 Agent 编排](../patterns/case-study-bondseek-multi-agent.md) | [SSE 断线恢复](../patterns/case-study-bondseek-sse-recovery.md)
+> **关联案例:** [记忆系统](../../patterns/case-study-bondseek-memory.md) | [用户画像](../../patterns/case-study-bondseek-user-memory.md) | [RAG 检索](../../patterns/case-study-bondseek-rag.md) | [多 Agent 编排](../../patterns/case-study-bondseek-multi-agent.md) | [SSE 断线恢复](../../patterns/case-study-bondseek-sse-recovery.md)
 
 ---
 
@@ -46,7 +46,7 @@ status: draft
 
 **代价：** 双份存储增加复杂度和查询成本；压缩是"有损"的，细节可能被摘要吞掉。
 
-> 📎 深挖：`session-compression-in-agent-systems.md` | `case-study-bondseek-memory.md`
+> 📎 深挖：[`session-compression-in-agent-systems.md`](../memory-and-state/session-compression-in-agent-systems.md) | [`case-study-bondseek-memory.md`](../../patterns/case-study-bondseek-memory.md)
 
 ---
 
@@ -61,7 +61,7 @@ status: draft
 
 **代价：** 每次对话要额外调 LLM 召回记忆；画像注入有 token 成本（上限 2000）；记忆可能过时（用 stale 标记 + 月度清理兜底）。
 
-> 📎 深挖：`case-study-bondseek-user-memory.md`（L1 专项）| `case-study-bondseek-memory.md`
+> 📎 深挖：[`case-study-bondseek-user-memory.md`](../../patterns/case-study-bondseek-user-memory.md)（L1 专项）| [`case-study-bondseek-memory.md`](../../patterns/case-study-bondseek-memory.md)
 
 **有个关键触发治理**：只有 `trigger=user`（真实用户对话）才走记忆链路，cron 定时任务和首页初始化一律跳过——**记忆是给"人"用的，不是给"机器"用的。**
 
@@ -79,7 +79,7 @@ status: draft
 
 **代价：** **代价极大**——每次检索前的预处理就 2+ 次 LLM 调用（Rewrite + 关键词 + Step-Back/Decompose/Multi-Query），延迟和成本肉眼可见。这是 BondSeek 选择"重管线"的明证：**费 LLM 但不费结果**。
 
-> 📎 深挖：`case-study-bondseek-rag.md` §2
+> 📎 深挖：[`case-study-bondseek-rag.md`](../../patterns/case-study-bondseek-rag.md) §2
 
 ---
 
@@ -96,7 +96,7 @@ status: draft
 
 **代价：** 多 Agent = 多轮 LLM 调用（成本翻倍）；LLM 决策"派谁"本身可能出错（用 system prompt 硬规则兜底）；编排链路深，故障点变多。
 
-> 📎 深挖：`case-study-bondseek-multi-agent.md`
+> 📎 深挖：[`case-study-bondseek-multi-agent.md`](../../patterns/case-study-bondseek-multi-agent.md)
 
 ---
 
@@ -113,7 +113,7 @@ status: draft
 
 **代价：** 检索管线又长又贵（Query 扩展 + 三路向量 + Rerank = 数次模型调用）；"重召回 + 精排"架构对基建要求高（要同时维护 Milvus + PG + 图谱）。
 
-> 📎 深挖：`case-study-bondseek-rag.md`
+> 📎 深挖：[`case-study-bondseek-rag.md`](../../patterns/case-study-bondseek-rag.md)
 
 ---
 
@@ -128,7 +128,7 @@ status: draft
 
 **代价：** 每次事件都要写一次 Redis（性能开销）；日志有 TTL 上限（2h/2000 条），超时没重连就追不回来了。
 
-> 📎 深挖：`case-study-bondseek-sse-recovery.md`
+> 📎 深挖：[`case-study-bondseek-sse-recovery.md`](../../patterns/case-study-bondseek-sse-recovery.md)
 
 ---
 
@@ -174,7 +174,7 @@ status: draft
 
 **代价：** 异步链路复杂（NATS + Worker + Scheduler 三件套）；记忆写入有延迟（最坏 10 分钟补上）；异步失败路径多，审计成本高。
 
-> 📎 深挖：`case-study-bondseek-user-memory.md` §3、§8
+> 📎 深挖：[`case-study-bondseek-user-memory.md`](../../patterns/case-study-bondseek-user-memory.md) §3、§8
 
 ---
 
@@ -230,7 +230,7 @@ status: draft
 |------------|---------|
 | **零基础入门 Agent** | 本文（总纲）→ context-vs-memory → session-compression |
 | **想读懂真实生产系统** | 本文 → 记忆系统 → 用户画像 → RAG → 多 Agent → SSE |
-| **准备 Agent 面试** | 本文（5 大哲学当底层逻辑）→ [面试清单](../notes/agent-interview-questions.md) 逐题对答案 |
+| **准备 Agent 面试** | 本文（5 大哲学当底层逻辑）→ [面试清单](../../notes/agent-interview-questions.md) 逐题对答案 |
 
 ---
 

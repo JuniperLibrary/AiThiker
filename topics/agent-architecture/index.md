@@ -28,7 +28,7 @@
 
 ## 核心资源
 
-- `papers/` — 相关论文笔记
+- [`resources/papers.md`](../../resources/papers.md) — 原始论文索引（原规划的 papers/ 目录合并至此）
 - `experiments/` — 架构实验记录
 - `patterns/` — 可复用架构模式
 

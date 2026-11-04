@@ -101,10 +101,11 @@ AiThiker/
 ├── README.md                       ← 你在这（总导航）
 ├── AGENTS.md                       ← 给 AI 开发助手看的约定（不用读）
 ├── topics/                         ← 📖 理论知识（按领域分目录）
+│   ├── SPEC.md                     ← 📐 题目（v1.0 深度规格：溯源/证伪/复现/盲评）
 │   ├── memory-and-state/           ← 记忆与上下文（当前最全）
 │   ├── agent-frameworks/           ← Agent 框架分析
 │   ├── agent-architecture/         ← Agent 架构设计
-│   └── ...（共 15 个话题目录，多数为空/入口待填充）
+│   └── ...（共 15 个话题目录，v0 现状多数为空——收缩与深写计划见 SPEC.md）
 ├── patterns/                       ← 🏗️ 可复用设计模式 + 生产案例分析
 ├── experiments/                    ← 🧪 动手实验记录 + 小型工具项目
 ├── resources/                      ← 📎 工具/接口参考

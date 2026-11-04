@@ -1,6 +1,6 @@
 ﻿# prompt-engineering -- 提示工程
 
-**路径:** 	opics/prompt-engineering/
+**路径:** topics/prompt-engineering/
 **作用:** 研究指令设计、Few-shot 选择、System Prompt 编写、输出格式控制等提示工程技术。
 
 ## 关键文档
@@ -8,10 +8,10 @@
 | 文件 | 内容 |
 |------|------|
 | index.md | 提示工程全景与范式 |
-| system-prompt-design.md | 系统提示的结构化编写方法 |
-| ew-shot-selection.md | 示例选择策略（KNN、语义聚类、动态选择）|
-| output-formatting.md | JSON mode、Structured Output、Schema 绑定 |
-| prompt-catalog/ | 可复用的提示模板目录 |
+| system-prompt-design.md | 系统提示的结构化编写方法（计划，未创建） |
+| few-shot-selection.md | 示例选择策略（KNN、语义聚类、动态选择）（计划，未创建）|
+| output-formatting.md | JSON mode、Structured Output、Schema 绑定（计划，未创建） |
+| prompt-catalog/ | 可复用的提示模板目录（计划，未创建） |
 
 ## 提示模板规范
 
@@ -38,7 +38,7 @@
 
 - prompt-catalog/ 中的 .md 文件: 即用型提示模板
 - index.md 的 **Patterns** 章节: 高频提示模式
-- 跨话题引用: ../llm-reasoning/chain-of-thought.md
+- 跨话题引用: ../llm-reasoning/chain-of-thought.md（计划，未创建）
 
 ## 质量检查
 

@@ -42,4 +42,4 @@
 
 ---
 
-引用外部话题: 见 ../agent-architecture/, ../patterns/, ../tool-use/
+引用外部话题: 见 ../agent-architecture/, ../../patterns/, ../tool-use/

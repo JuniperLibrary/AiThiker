@@ -867,7 +867,7 @@ AiThiker/
 - `../memory-and-state/AGENTS.md` — 记忆系统目录约定
 - `../agent-architecture/index.md` — Agent 架构中的状态管理
 - `../multi-agent-systems/index.md` — 多 Agent 协作中的上下文共享
-- `../patterns/` — 会话压缩设计模式（待创建）
+- `../../patterns/` — 会话压缩设计模式（待创建）
 - `../../experiments/` — 压缩策略实验记录（待创建）
 
 ---
