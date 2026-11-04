@@ -1,8 +1,8 @@
 # 多轮对话 Go Agent —— 深度规格（题目）
 
-**版本:** v1.0（题目重写）
+**版本:** v1.1（题目重写 + 范围变更）
 **日期:** 2026-11-03
-**状态:** 待评审
+**状态:** 已实现（离线验证交付，见 [`VERIFICATION.md`](VERIFICATION.md)）；内网抓包/-race/差分对拍待核
 **前置文档:** `../go-multi-turn-agent-design.md`（v0 现状记录）、本文件为新题目，后续实现以本文件为准
 **实验路径:** `experiments/go-agent/`
 
@@ -69,8 +69,8 @@
 |---|---|---|---|
 | API 规范 | Chat Completions 官方参考原文（错误对象、finish_reason 全集、stream_options） | platform.openai.com/docs | 请求/响应符合性判据 |
 | 流式规范 | WHATWG SSE 规范原文（`data:` 语法、多行、CRLF、注释、event/id/retry） | html.spec.whatwg.org | SSE 解析器符合性判据 |
-| 服务端真值 | vLLM OpenAI-compatible server 源码（模型名 `service-GLM-5-w8a8-vllm` 即其部署） | github.com/vllm-project/vllm | 服务端实际行为的 ground truth |
-| 线缆证据 | `curl -v --raw` / tcpdump 抓取的真实 SSE 原始字节 | 本机内网网关 | record & replay fixture，不经转述 |
+| 服务端真值 | OpenAI 兼容服务端源码（vLLM / llama.cpp / 各类推理服务，按实际部署选择） | 各项目源码 | 服务端实际行为的 ground truth |
+| 线缆证据 | `curl -v --raw` / tcpdump 抓取的真实 SSE 原始字节 | 实际使用的服务端 | record & replay fixture，不经转述 |
 | 语言语义 | Go 标准库源码与文档（`bufio.MaxScanTokenSize`、`net/http` 超时、`context`、`sync`、Go memory model） | go.dev | 并发/超时结论的依据 |
 | token 真值 | API 响应 `usage` 字段 + 模型 tokenizer | API 本身 | 对拍本地估算误差 |
 | 故障语料 | openai-python / openai-go 的 GitHub issues、流式中断事故报告 | GitHub | 已知故障模式清单 |
@@ -78,6 +78,8 @@
 | 自身记录 | 本实验完整原始对话 transcript（raw，非摘要表格） | 本地会话 | 失败细节回溯 |
 
 **禁止**：以设计文档的转述、示例格式、个人印象代替规范原文与抓包字节。
+
+**范围变更（2026-11-03）**：本项目**不再支持内网网关**——网关私有字段（`chatId`/`detail`）、内网默认地址与模型名一并移除，只保留 OpenAI 标准协议面。
 
 ---
 
@@ -180,13 +182,14 @@
 
 ## 9. 待核清单（禁止凭记忆填写，核实后才可写入结论）
 
-1. 内网网关/vLLM 是否支持 `stream_options.include_usage`（流式 usage 的获取方式）
-2. 真实 SSE 字节格式：`data:` 后是否有空格、行尾 CRLF/LF、`[DONE]` 前后空行、流内 error chunk 的确切形状（**必须抓包确认**）
-3. 上游 429/500/超时的真实返回体格式
-4. GLM tokenizer 能否离线获取（token 真值的本地来源；否则以 usage 为唯一真值）
-5. `max_tokens=1024` 是否实际触发 `finish_reason=length`（构造长回答验证）
-6. `bufio.Scanner` 64KB 行上限是否实际可触发（构造超长行验证）
-7. 网关 `chatId`/`detail` 字段的规范出处（非 OpenAI 标准字段，需确认来源与语义）
+1. 目标 OpenAI 兼容服务端是否支持 `stream_options.include_usage`（流式 usage 的获取方式）
+2. 真实 SSE 字节格式：`data:` 后是否有空格、行尾 CRLF/LF、`[DONE]` 前后空行、流内 error chunk 的确切形状（**必须对目标服务端抓包确认**）
+3. 目标服务端 429/500/超时的真实返回体格式
+4. 所用模型 tokenizer 能否离线获取（token 真值的本地来源；否则以 usage 为唯一真值）
+5. `max_tokens` 是否实际触发 `finish_reason=length`（构造长回答验证）
+6. 单行超长时服务端的实际行为（构造超长行验证）
+
+> ~~7. 网关 `chatId`/`detail` 字段出处~~ → **已解决**：退出内网范围，私有字段已从请求体移除（`TestRequestOnlyStandardFields` 断言）。
 
 > 以上任一项未核实前，相关结论标记 `pending_verification`，不进入符合性矩阵的"通过"列。
 
@@ -205,3 +208,5 @@
 | 日期 | 版本 | 说明 |
 |---|---|---|
 | 2026-11-03 | v1.0 | 题目重写：深度优先非规模优先；8 条结构性差距（附代码位置）、七深度轴、非目标写死、原始素材清单、方法工具、九项外部验证、待核清单 7 项 |
+| 2026-11-03 | v1.0 | 实现交付：38 项测试全绿（9s）、SSE fuzz 30s/118 万次 0 crash、变异 2/2 被杀、覆盖 93.2%、密钥清零；详见 VERIFICATION.md |
+| 2026-11-03 | v1.1 | 范围变更：退出内网支持——移除 chatId/detail 私有字段、内网默认地址/模型、chatID 概念；配置改为 ENDPOINT 完整 URL + MODEL_NAME 必填 |

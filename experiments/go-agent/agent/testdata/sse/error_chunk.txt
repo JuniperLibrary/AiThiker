@@ -1,0 +1,4 @@
+data: {"choices":[{"index":0,"delta":{"role":"assistant","content":"收到一块"}}]}
+
+data: {"error":{"message":"upstream exploded","type":"server_error"}}
+

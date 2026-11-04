@@ -2,15 +2,19 @@
 package agent
 
 import (
+	"context"
 	"strings"
 	"testing"
 )
 
 // TestNewAgent 验证 Agent 初始化和系统提示词。
 func TestNewAgent(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
+	a := newTestAgent("http://test:8080/v1/chat/completions")
 	if a == nil {
 		t.Fatal("NewAgent() 返回 nil")
+	}
+	if a.State() != StateIdle {
+		t.Fatalf("初始状态应为 idle，实际: %s", a.State())
 	}
 
 	history := a.GetHistory()
@@ -27,7 +31,7 @@ func TestNewAgent(t *testing.T) {
 
 // TestSetSystemMessage 验证设置系统提示词。
 func TestSetSystemMessage(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
+	a := newTestAgent("http://test:8080/v1/chat/completions")
 	a.SetSystemMessage("新的系统提示词")
 
 	history := a.GetHistory()
@@ -38,7 +42,7 @@ func TestSetSystemMessage(t *testing.T) {
 
 // TestClearHistory 验证清空历史会保留系统提示词。
 func TestClearHistory(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
+	a := newTestAgent("http://test:8080/v1/chat/completions")
 
 	// 手动追加一些消息模拟对话
 	a.mu.Lock()
@@ -78,17 +82,21 @@ func TestMessageCreation(t *testing.T) {
 	}
 }
 
-// TestGetStats 验证对话统计功能。
+// TestGetStats 验证对话统计功能（估算与真值并列）。
 func TestGetStats(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
+	a := newTestAgent("http://test:8080/v1/chat/completions")
 
-	// 初始状态
 	stats := a.GetStats()
 	if stats.TotalMessages != 1 {
 		t.Fatalf("初始化后应有 1 条消息 (system)，实际: %d", stats.TotalMessages)
 	}
+	if stats.State != StateIdle {
+		t.Fatalf("初始状态应为 idle，实际: %s", stats.State)
+	}
+	if stats.Usage != nil {
+		t.Fatal("未发生请求时不应有服务端真值")
+	}
 
-	// 追加测试消息
 	a.mu.Lock()
 	a.messages = append(a.messages, NewUserMessage("你好"))
 	a.messages = append(a.messages, NewAssistantMessage("你好！我是 AI 助手。"))
@@ -103,26 +111,37 @@ func TestGetStats(t *testing.T) {
 	}
 }
 
-// TestResetChatID 验证重置对话 ID。
-func TestResetChatID(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
-	a.ResetChatID("new-chat-id")
+// TestRequestOnlyStandardFields 请求体只携带 OpenAI 标准字段
+// （退出内网后不再有 chatId/detail 等网关私有字段）。
+func TestRequestOnlyStandardFields(t *testing.T) {
+	srv := newMock(t, hOKNonStream("ok"))
+	a := newTestAgent(srv.URL)
 
-	// 无法直接从外部访问 chatID，但我们可以验证 ClearHistory 后功能正常
-	a.ClearHistory()
-	history := a.GetHistory()
-	if len(history) != 1 {
-		t.Fatalf("期望 1 条消息，实际: %d", len(history))
+	if _, err := a.Chat(context.Background(), "字段检查"); err != nil {
+		t.Fatalf("Chat 失败: %v", err)
+	}
+	if srv.count() != 1 {
+		t.Fatalf("期望 1 次请求，实际 %d", srv.count())
+	}
+	body := string(srv.rawBody(0))
+	for _, banned := range []string{"chatId", "detail"} {
+		if strings.Contains(body, `"`+banned+`"`) {
+			t.Fatalf("请求体含网关私有字段 %q: %s", banned, body)
+		}
+	}
+	for _, want := range []string{"messages", "model", "max_tokens", "stream"} {
+		if !strings.Contains(body, `"`+want+`"`) {
+			t.Fatalf("请求体缺少标准字段 %q: %s", want, body)
+		}
 	}
 }
 
-// TestConcurrentAccess 验证并发读安全（竞态检测）。
+// TestConcurrentAccess 验证并发读写安全（配合 -race 运行）。
 func TestConcurrentAccess(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
+	a := newTestAgent("http://test:8080/v1/chat/completions")
 
 	done := make(chan bool, 2)
 
-	// 并发写入
 	go func() {
 		for i := 0; i < 100; i++ {
 			a.mu.Lock()
@@ -132,11 +151,11 @@ func TestConcurrentAccess(t *testing.T) {
 		done <- true
 	}()
 
-	// 并发读取
 	go func() {
 		for i := 0; i < 100; i++ {
 			_ = a.GetHistory()
 			_ = a.GetStats()
+			_ = a.State()
 		}
 		done <- true
 	}()
@@ -152,13 +171,11 @@ func TestConcurrentAccess(t *testing.T) {
 
 // TestHistoryCopy 验证 GetHistory 返回的是副本而非引用。
 func TestHistoryCopy(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
+	a := newTestAgent("http://test:8080/v1/chat/completions")
 	history := a.GetHistory()
-	// 修改副本
 	if len(history) > 0 {
 		history[0].Content = "篡改内容"
 	}
-	// 验证原始数据未受影响
 	original := a.GetHistory()
 	if original[0].Content == "篡改内容" {
 		t.Fatal("GetHistory 未返回副本，修改影响了原始数据")
@@ -167,7 +184,7 @@ func TestHistoryCopy(t *testing.T) {
 
 // TestLargeMessage 测试大消息场景。
 func TestLargeMessage(t *testing.T) {
-	a := NewAgent("http://test:8080/v1/chat/completions", "test-key", "test-model", 100, false, "test-chat")
+	a := newTestAgent("http://test:8080/v1/chat/completions")
 
 	largeContent := strings.Repeat("这是一个很长的测试消息。", 1000)
 	a.mu.Lock()
@@ -190,6 +207,33 @@ func TestLargeMessage(t *testing.T) {
 	if stats.Tokens <= 0 {
 		t.Fatal("大消息的 Token 估算应为正数")
 	}
+}
+
+// TestChatCommitted 端到端（mock）：成功轮次成对入库 + usage 真值回填。
+func TestChatCommitted(t *testing.T) {
+	srv := newMock(t, hOKNonStream("测试回复"))
+	a := newTestAgent(srv.URL)
+
+	result, err := a.Chat(context.Background(), "第一轮")
+	if err != nil {
+		t.Fatalf("Chat 失败: %v", err)
+	}
+	if result.Outcome != OutcomeCommitted {
+		t.Fatalf("结局应为 committed，实际: %s", result.Outcome)
+	}
+	if result.Reply != "测试回复" {
+		t.Fatalf("回复不正确: %q", result.Reply)
+	}
+	if result.Usage == nil || result.Usage.PromptTokens != 10 {
+		t.Fatalf("usage 真值未回填: %+v", result.Usage)
+	}
+	if result.Attempts != 1 {
+		t.Fatalf("成功不应重试，attempts=%d", result.Attempts)
+	}
+	if a.State() != StateIdle {
+		t.Fatalf("轮次结束后应为 idle，实际: %s", a.State())
+	}
+	assertInvariant(t, a)
 }
 
 // AICode End

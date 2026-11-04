@@ -36,12 +36,14 @@
 
 | 模型 | 全称 | API Key |
 |------|------|---------|
-| **GLM** | `service-GLM-5-w8a8-vllm-Bigep` | `NnVkBHYB7SkS9fXWnvOytael_Rf46j_ijen2h7iH4Zt_by3857pDx26s3igrMYS19CzCI26UHUYTLCQ6U5GvBw` |
-| **Qwen** | `service-Qwen35-397B-A17B-W8a8-test` | `N9r_TGRoGAsM0Z7-R5kbbhWRpZjmZpLsXid1LVjdj_wp55LosTK9PKgv4MLHLT321JskOqLNbCPczwfDSy3nQ` |
+| **GLM** | `service-GLM-5-w8a8-vllm-Bigep` | 环境变量 `$GLM_KEY` |
+| **Qwen** | `service-Qwen35-397B-A17B-W8a8-test` | 环境变量 `$QWEN_KEY` |
 
-> ⚠️ Key 从 Postman 截屏辨认，个别字符（`l/I/1`、`O/0`）待文本核对。
+> 🔒 **密钥不再入库（2026-11-03，SPEC v1.0 安全修正）**：原硬编码 Key 已移除，使用前 `export GLM_KEY=... / QWEN_KEY=...`。
 >
-> ⚠️ **Qwen 直连报 `ModelArts.8902, Api key auth failed`（密钥认证失败）** — 说明文档中的 QWEN_KEY 可能不正确（或与 GLM_KEY 搞反了）。
+> ⚠️ 原 Key 从 Postman 截屏辨认，个别字符（`l/I/1`、`O/0`）待文本核对。
+>
+> ⚠️ **Qwen 直连报 `ModelArts.8902, Api key auth failed`（密钥认证失败）** — 说明原 QWEN_KEY 可能不正确（或与 GLM_KEY 搞反了）。
 > 建议先用 GLM_KEY 的值调 Qwen 试试能否通，或者从 Postman 重新截图核对 Key 中的模糊字符。
 
 ---
@@ -59,7 +61,7 @@
 ```bash
 curl -s -m 60 "http://20.200.25.216:8080/v1/chat/completions" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer NnVkBHYB7SkS9fXWnvOytael_Rf46j_ijen2h7iH4Zt_by3857pDx26s3igrMYS19CzCI26UHUYTLCQ6U5GvBw" \
+  -H "Authorization: Bearer $GLM_KEY" \
   -d '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,
@@ -77,7 +79,7 @@ curl -s -m 60 "http://20.200.25.216:8080/v1/chat/completions" \
 ```bash
 curl -sN -m 60 "http://20.200.25.216:8080/v1/chat/completions" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer NnVkBHYB7SkS9fXWnvOytael_Rf46j_ijen2h7iH4Zt_by3857pDx26s3igrMYS19CzCI26UHUYTLCQ6U5GvBw" \
+  -H "Authorization: Bearer $GLM_KEY" \
   -d '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,
@@ -95,7 +97,7 @@ curl -sN -m 60 "http://20.200.25.216:8080/v1/chat/completions" \
 ```bash
 curl -s -m 60 "http://20.200.25.216:8080/v1/chat/completions" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer N9r_TGRoGAsM0Z7-R5kbbhWRpZjmZpLsXid1LVjdj_wp55LosTK9PKgv4MLHLT321JskOqLNbCPczwfDSy3nQ" \
+  -H "Authorization: Bearer $QWEN_KEY" \
   -d '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,
@@ -113,7 +115,7 @@ curl -s -m 60 "http://20.200.25.216:8080/v1/chat/completions" \
 ```bash
 curl -sN -m 60 "http://20.200.25.216:8080/v1/chat/completions" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer N9r_TGRoGAsM0Z7-R5kbbhWRpZjmZpLsXid1LVjdj_wp55LosTK9PKgv4MLHLT321JskOqLNbCPczwfDSy3nQ" \
+  -H "Authorization: Bearer $QWEN_KEY" \
   -d '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,
@@ -235,7 +237,7 @@ curl -s -m 60 "http://127.0.0.1:8005/qwen/v1/chat/completions" \
 ```bash
 curl --location --request POST 'http://20.200.25.216:8080/v1/chat/completions' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer NnVkBHYB7SkS9fXWnvOytael_Rf46j_ijen2h7iH4Zt_by3857pDx26s3igrMYS19CzCI26UHUYTLCQ6U5GvBw' \
+--header 'Authorization: Bearer $GLM_KEY' \
 --data-raw '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,
@@ -256,7 +258,7 @@ curl --location --request POST 'http://20.200.25.216:8080/v1/chat/completions' \
 ```bash
 curl --location --request POST 'http://20.200.25.216:8080/v1/chat/completions' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer N9r_TGRoGAsM0Z7-R5kbbhWRpZjmZpLsXid1LVjdj_wp55LosTK9PKgv4MLHLT321JskOqLNbCPczwfDSy3nQ' \
+--header 'Authorization: Bearer $QWEN_KEY' \
 --data-raw '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,
@@ -277,7 +279,7 @@ curl --location --request POST 'http://20.200.25.216:8080/v1/chat/completions' \
 ```bash
 curl --location --request POST 'http://20.200.25.216:8080/v1/chat/completions' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer NnVkBHYB7SkS9fXWnvOytael_Rf46j_ijen2h7iH4Zt_by3857pDx26s3igrMYS19CzCI26UHUYTLCQ6U5GvBw' \
+--header 'Authorization: Bearer $GLM_KEY' \
 --data-raw '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,
@@ -298,7 +300,7 @@ curl --location --request POST 'http://20.200.25.216:8080/v1/chat/completions' \
 ```bash
 curl --location --request POST 'http://20.200.25.216:8080/v1/chat/completions' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer N9r_TGRoGAsM0Z7-R5kbbhWRpZjmZpLsXid1LVjdj_wp55LosTK9PKgv4MLHLT321JskOqLNbCPczwfDSy3nQ' \
+--header 'Authorization: Bearer $QWEN_KEY' \
 --data-raw '{
     "chatId": "abcdefghrweqw12679001112291111",
     "detail": false,

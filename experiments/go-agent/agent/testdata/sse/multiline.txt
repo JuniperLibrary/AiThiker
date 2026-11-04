@@ -1,0 +1,7 @@
+data: {"choices":[{"index":0,
+data: "delta":{"content":"多行 data 连接"}}]}
+
+data: {"choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+

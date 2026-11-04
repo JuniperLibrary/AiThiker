@@ -1,0 +1,12 @@
+: keep-alive
+
+event: message
+id: 42
+retry: 1000
+data: {"choices":[{"index":0,"delta":{"role":"assistant","content":"注释与元字段"}}]}
+
+: another keep-alive
+data: {"choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+
