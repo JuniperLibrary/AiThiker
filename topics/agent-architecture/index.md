@@ -24,6 +24,7 @@
 |------|------|
 | [`from-zero-to-agent.md`](./from-zero-to-agent.md) | **总纲**：一次对话的完整旅程，串起全库所有案例 + 5 大设计哲学卡片 |
 | [`cognitive-architecture-paradigms.md`](./cognitive-architecture-paradigms.md) | 认知架构三大范式对比：ReAct（边想边做）/ Plan-and-Execute（先计划后执行）/ Reflection（先做后审），含生产组合拳 + 30 秒面试框架 |
+| [`loop-convergence-control.md`](./loop-convergence-control.md) | **循环收敛控制**：重复检索与多 Agent 来回交接怎么发现、怎么停；硬上限 / 动作指纹去重 / 收敛判据 / 权责结构四层治理 + BondSeek 事实核对 |
 
 ## 核心资源
 

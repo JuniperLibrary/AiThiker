@@ -54,6 +54,7 @@
 | 16 | **多 Agent 协作模式（Supervisor / Peer / Hierarchical）** | [`topics/multi-agent-systems/coordination-patterns.md`](../topics/multi-agent-systems/coordination-patterns.md)：三模式对比 + 选型决策框架 + Sub-Agent 工具化包装落地 + 30 秒面试框架 |
 | 17 | **评估 Agent 有哪些指标？** | [`topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md`](../topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md)：四维度指标 + 端到端/分解 + 自动/人工 + GAIA 等基准 + Effect Size |
 | 18 | **Tool 执行失败怎么处理？（如网络异常）** | [`topics/tool-use/function-calling.md`](../topics/tool-use/function-calling.md) §6：先分类（网络=重试/参数=自改/业务=降级/安全=拒绝）+ 失败是给模型的 Observation + BondSeek 落地 + 追问防御 |
+| 19 | **Agent 一直重复搜索 / 在多个 Agent 之间来回交接怎么处理？** | [`topics/agent-architecture/loop-convergence-control.md`](../topics/agent-architecture/loop-convergence-control.md)：两类循环根因 + 检测信号 + 硬上限/动作指纹去重/收敛判据/权责结构 + 兜底 + BondSeek 事实核对 + 行业方案对照 |
 
 ---
 
@@ -81,8 +82,9 @@
 - ☑️ #16 多 Agent 模式 — [多 Agent 协作模式文档](../topics/multi-agent-systems/coordination-patterns.md)
 - ☑️ #17 评估指标 — [评估 Agent 全解文档](../topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md)
 - ☑️ #18 工具失败处理 — [函数调用原理文档](../topics/tool-use/function-calling.md) §6
+- ☐ #19 重复搜索 / 多 Agent 交接循环 — [循环收敛控制文档](../topics/agent-architecture/loop-convergence-control.md)
 
-> 🎉 **#0~#18 全部 19 题已覆盖** — 知识库可作为完整求职复习体系。
+> 🎉 **#0~#18 全部 19 题已覆盖，#19 已登记待复习** — 知识库可作为完整求职复习体系。
 
 ---
 

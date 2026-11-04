@@ -43,6 +43,7 @@
 | [认知架构范式对比（ReAct / Plan / Reflection）](./topics/agent-architecture/cognitive-architecture-paradigms.md) | Agent 的"思考与行动"三大组织方式：边想边做/先计划后执行/先做后审 | ⭐⭐ 中阶 |
 | [函数调用原理（Function Calling / Tool Calling）](./topics/tool-use/function-calling.md) | Agent 怎么"动手"：工具定义/参数/结果三要素 + 调用闭环 + BondSeek Go 实现 | ⭐⭐ 中阶 |
 | [多 Agent 协作模式（Supervisor / Peer / Hierarchical）](./topics/multi-agent-systems/coordination-patterns.md) | 多个 AI 怎么分工：老板模式/对等模式/分层模式对比 + 工具化包装落地 | ⭐⭐ 中阶 |
+| [循环收敛控制（重复检索 / 多 Agent 交接）](./topics/agent-architecture/loop-convergence-control.md) | Agent 一直重复搜索、几个 Agent 互相推活怎么办：硬上限 + 动作指纹去重 + 收敛判据 + 权责结构；含行业方案（LangGraph / AutoGen / CrewAI / OpenAI SDK） | ⭐⭐ 中阶 |
 | [评估 Agent 全解（指标 / 方法 / 基准）](./topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md) | Agent 怎么打分：四维度指标 + 端到端/分解 + 自动/人工 + GAIA 等基准 | ⭐⭐ 中阶 |
 
 ### 2️⃣ 生产案例分析（BondSeek 债券 AI 平台——真实生产代码）
@@ -87,6 +88,7 @@
 | "ReAct / Plan-and-Execute / Reflection 有什么区别？" | [认知架构范式对比](./topics/agent-architecture/cognitive-architecture-paradigms.md) |
 | "Function Calling 是什么原理？" | [函数调用原理](./topics/tool-use/function-calling.md) |
 | "多个 Agent 怎么分工协作？" | [多 Agent 协作模式](./topics/multi-agent-systems/coordination-patterns.md) + [BondSeek 多 Agent 编排](./patterns/case-study-bondseek-multi-agent.md) |
+| "Agent 一直在原地重复搜索 / 几个 Agent 互相推活怎么办？" | [循环收敛控制](./topics/agent-architecture/loop-convergence-control.md)（含行业方案对照） |
 | "Agent 做得对不对怎么评？" | [评估 Agent 全解](./topics/evaluation-and-benchmarks/method-agent-evaluation-metrics.md) |
 | "Agent 面试会问记忆/上下文什么？" | [Context 与 Memory 本体论](./topics/memory-and-state/context-vs-memory.md) + [会话压缩专题](./topics/memory-and-state/session-compression-in-agent-systems.md) |
 
