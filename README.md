@@ -6,7 +6,7 @@
 > 🏷️ **建议 Topics:** `ai-agents` `llm` `rag` `multi-agent` `langchain` `langgraph` `function-calling` `knowledge-base` `prompt-engineering` `ai-notes`
 
 > **这是什么:** 关于"AI Agent（智能体）"的学习笔记库——想搞懂 Agent 怎么工作、怎么设计、面试会问什么，从这里开始。
-> **怎么用:** 按照下文"知识地图"找你想了解的主题 → 点开对应文档。文档里英文术语都有中文对照（开头有速查表，文末有完整术语表）。
+> **怎么用:** 按照下文"知识地图"找你想了解的主题 → 点开对应文档。主要文档里英文术语有中文对照（开头有速查表，文末有术语表）。
 
 ---
 
@@ -101,15 +101,15 @@ AiThiker/
 ├── README.md                       ← 你在这（总导航）
 ├── AGENTS.md                       ← 给 AI 开发助手看的约定（不用读）
 ├── topics/                         ← 📖 理论知识（按领域分目录）
-│   ├── memory-and-state/           ← 记忆与上下文（当前最全）
-│   ├── agent-frameworks/           ← Agent 框架分析
-│   ├── agent-architecture/         ← Agent 架构设计
-│   └── ...（共 15 个话题目录，多数为空/入口待填充）
+│   ├── memory-and-state/           ← 记忆与上下文（2 篇）
+│   ├── agent-frameworks/           ← Agent 框架分析（1 篇）
+│   ├── agent-architecture/         ← Agent 架构设计（3 篇）
+│   └── ...（共 15 个话题目录，其中 6 个已有实质正文、9 个仅有入口）
 ├── patterns/                       ← 🏗️ 可复用设计模式 + 生产案例分析
 ├── experiments/                    ← 🧪 动手实验记录 + 小型工具项目
 ├── resources/                      ← 📎 工具/接口参考
 ├── notes/                          ← 🗒️ 临时笔记（整理后迁移）
-└── langchain/                      ← 📦 LangChain 学习/实验区（待填充）
+└── langchain/                      ← 📦 LangChain 学习/实验区（目前仅 README.md）
 ```
 
 ---
@@ -118,12 +118,12 @@ AiThiker/
 
 | 区域 | 状态 | 说明 |
 |------|------|------|
-| 理论知识（topics/） | ◆◆◆◇ 40% | 记忆 2 篇 + 框架 1 篇 + **总纲 1 篇**（agent-architecture） |
-| 生产案例（patterns/） | ◆◆◆◆ 100% | 8 篇 BondSeek 深度案例（记忆/画像/RAG/编排/SSE/防幻觉/可观测性/微服务），全部带 TL;DR 冲突摘要 |
-| 实验记录（experiments/） | ◆◆◇◇ 30% | 1 个 Go 实验 + 设计笔记 + 1 个出行合规工具 |
-| 语言标注（术语表） | ◆◆◆◆ 95% | 全部实质文档三层标注（速查/内联/术语表）+ TL;DR |
-| **总纲导航** | ◆◆◆◆ 100% | 「一次对话的完整旅程」串起全部案例 + 5 大设计哲学卡片 |
-| Git 仓库 | ◆◇◇◇ 10% | 已初始化 + 首次提交，有大量未提交变更待确认 |
+| 理论知识（topics/） | 6/15 个目录有实质正文 | 共 15 个话题目录、9 篇实质文档：agent-architecture 3 篇（总纲/认知架构/循环收敛）、memory-and-state 2 篇、tool-use 1 篇、multi-agent-systems 1 篇、evaluation-and-benchmarks 1 篇、agent-frameworks 1 篇；其余 9 个目录仅有 index.md + AGENTS.md |
+| 生产案例（patterns/） | 8 篇 | 8 篇 BondSeek 深度案例（记忆/画像/RAG/编排/SSE/防幻觉/可观测性/微服务），均带 TL;DR 冲突摘要 |
+| 实验记录（experiments/） | 3 项 | Go 多轮对话 Agent（SPEC + Go 代码）、Go 多轮设计笔记、北京出行合规助手（README/SPEC/index.html/test-logic.js） |
+| 语言标注（术语表） | 主要文档已覆盖 | 主要实质文档带术语速查、内联解释与术语表；未逐篇统计覆盖率 |
+| **总纲导航** | 已就绪 | 「一次对话的完整旅程」串起主要案例 + 5 大设计哲学卡片 |
+| Git 仓库 | 已提交并同步 | 截至 0f0ed47：本地 9 个提交，master 与 origin/master 同步；本次 README 校正单独提交 |
 
 ---
 
