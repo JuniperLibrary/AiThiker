@@ -11,7 +11,7 @@ status: draft
 > **这是什么:** Agent 系统怎么评估——**评估指标**（完成度/效率/鲁棒性/安全性）、**评估方法**（端到端 vs 分解、自动 vs 人工）、**基准测试套件**（GAIA / SWE-bench / AgentBench）。面试题 #17 的答案素材。
 > **为什么重要:** "做得对不对"是所有 Agent 工程的第一性问题——LLM 输出不确定，没有评估就不知道系统是好是坏、改了是进步还是退步。面试官问这题，考的是**你有没有"度量意识"**。
 > **本文定位:** 理论为主 + **每类指标都结合 BondSeek 生产指标落地**（引用覆盖率/检索命中/反思轮数/置信度——见可观测性案例）。读完你能回答"评估 Agent 到底评什么、怎么评"。
-> **关联案例:** [可观测性](../patterns/case-study-bondseek-observability.md)（指标的采集）| [防幻觉](../patterns/case-study-bondseek-hallucination.md)（覆盖率/置信度的来源）
+> **关联案例:** [可观测性](../../patterns/case-study-bondseek-observability.md)（指标的采集）| [防幻觉](../../patterns/case-study-bondseek-hallucination.md)（覆盖率/置信度的来源）
 
 ## 📌 名词速查表（先看这里）
 
@@ -104,7 +104,7 @@ BondSeek 没有专门的评测集，但在生产埋了"端到端质量信号"：
 | **置信度 (Confidence)** | 幻觉检测输出 | 答案可信度 0~1——低于阈值触发重做 |
 | **检索命中** | RAG 埋点 | 检到多少 chunk/实体/关系——**0 命中 = 这次必答不好** |
 
-> 📎 深挖：`case-study-bondseek-hallucination.md`（覆盖率/置信度）+ `case-study-bondseek-observability.md`（指标采集）
+> 📎 深挖：[`case-study-bondseek-hallucination.md`](../../patterns/case-study-bondseek-hallucination.md)（覆盖率/置信度）+ [`case-study-bondseek-observability.md`](../../patterns/case-study-bondseek-observability.md)（指标采集）
 
 ---
 
@@ -256,8 +256,8 @@ Agent 的现实输入远比测试集刁钻：
 
 ## 关联文档
 
-- [`case-study-bondseek-observability.md`](../patterns/case-study-bondseek-observability.md) — 指标的采集（检索命中/覆盖率/反思轮数/工具调用树）
-- [`case-study-bondseek-hallucination.md`](../patterns/case-study-bondseek-hallucination.md) — 覆盖率 (Coverage) 与置信度 (Confidence) 的来源
-- [`from-zero-to-agent.md`](./from-zero-to-agent.md) — 总纲：⑦ 防失败、哲学四"一切数字化"（评估的思想根基）
-- [`cognitive-architecture-paradigms.md`](../topics/../agent-architecture/cognitive-architecture-paradigms.md) — Reflection 自我评估的关系
-- [`notes/agent-interview-questions.md`](../notes/agent-interview-questions.md) — 面试话题索引（第 17 题）
+- [`case-study-bondseek-observability.md`](../../patterns/case-study-bondseek-observability.md) — 指标的采集（检索命中/覆盖率/反思轮数/工具调用树）
+- [`case-study-bondseek-hallucination.md`](../../patterns/case-study-bondseek-hallucination.md) — 覆盖率 (Coverage) 与置信度 (Confidence) 的来源
+- [`from-zero-to-agent.md`](../agent-architecture/from-zero-to-agent.md) — 总纲：⑦ 防失败、哲学四"一切数字化"（评估的思想根基）
+- [`cognitive-architecture-paradigms.md`](../agent-architecture/cognitive-architecture-paradigms.md) — Reflection 自我评估的关系
+- [`notes/agent-interview-questions.md`](../../notes/agent-interview-questions.md) — 面试话题索引（第 17 题）

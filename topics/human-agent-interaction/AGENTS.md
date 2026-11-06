@@ -63,7 +63,7 @@ sequenceDiagram
 
 - `../safety-and-alignment/` — 安全交互与对齐
 - `../agent-architecture/` — HITL 架构集成
-- `../patterns/` — 人机交互设计模式
+- `../../patterns/` — 人机交互设计模式
 
 ---
 

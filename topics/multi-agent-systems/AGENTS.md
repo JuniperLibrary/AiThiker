@@ -48,4 +48,4 @@ sequenceDiagram
 
 ---
 
-引用外部话题: 见 ../agent-architecture/, ../patterns/
+引用外部话题: 见 ../agent-architecture/, ../../patterns/

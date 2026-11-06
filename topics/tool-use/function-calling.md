@@ -11,7 +11,7 @@ status: drafted
 > **这是什么:** 工具使用（Tool Use）与函数调用（Function Calling）的完整原理——**为什么需要、怎么定义、模型怎么决定调、代码怎么执行、结果怎么喂回去**。面试题 #15 的答案素材。
 > **为什么重要:** "Agent 的循环"里最核心的动作就是"调工具"——不懂工具调用原理，就不懂 Agent 怎么"动手"。
 > **本文定位:** 理论为主（面向任何 LLM/语言），工具调用协议以 OpenAI JSON Schema 为基线；**落地部分以 BondSeek 的 `agenttools` + `tools/register.go`（Go 实现）为实例**——读完你能看到"理论怎么变成一行行真实代码"。
-> **关联案例:** [多 Agent 编排](../patterns/case-study-bondseek-multi-agent.md) | [认知架构范式](./cognitive-architecture-paradigms.md)（ReAct 范式的 Action 就是工具调用）| [RAG 检索](../patterns/case-study-bondseek-rag.md)（检索类工具的典型形态）
+> **关联案例:** [多 Agent 编排](../../patterns/case-study-bondseek-multi-agent.md) | [认知架构范式](../agent-architecture/cognitive-architecture-paradigms.md)（ReAct 范式的 Action 就是工具调用）| [RAG 检索](../../patterns/case-study-bondseek-rag.md)（检索类工具的典型形态）
 > **代码参考:** `bondseek-common/agenttools/tool.go` + `bondseek-agent/internal/tools/register.go`（2026-10-29 读取）
 
 ## 📌 名词速查表（先看这里）
@@ -447,8 +447,8 @@ func NewSuccessResultWithLLMContent(title, output, llmContent string, ...) *agen
 
 ## 关联文档
 
-- [`cognitive-architecture-paradigms.md`](./cognitive-architecture-paradigms.md) — ReAct 范式的 `Action` 就是工具调用（Action 步骤放大版 = 本文）
-- [`case-study-bondseek-multi-agent.md`](../patterns/case-study-bondseek-multi-agent.md) — SubAgent 也是"工具"（工具化包装）+ 工具调用树（可观测）
-- [`case-study-bondseek-rag.md`](../patterns/case-study-bondseek-rag.md) — 检索类工具的典型形态（search_reports / web_search）
-- [`case-study-bondseek-observability.md`](../patterns/case-study-bondseek-observability.md) — 工具调用树（每次工具调用留痕：耗时/参数/结果）
-- [`notes/agent-interview-questions.md`](../notes/agent-interview-questions.md) — 面试话题索引（第 15 题）
+- [`cognitive-architecture-paradigms.md`](../agent-architecture/cognitive-architecture-paradigms.md) — ReAct 范式的 `Action` 就是工具调用（Action 步骤放大版 = 本文）
+- [`case-study-bondseek-multi-agent.md`](../../patterns/case-study-bondseek-multi-agent.md) — SubAgent 也是"工具"（工具化包装）+ 工具调用树（可观测）
+- [`case-study-bondseek-rag.md`](../../patterns/case-study-bondseek-rag.md) — 检索类工具的典型形态（search_reports / web_search）
+- [`case-study-bondseek-observability.md`](../../patterns/case-study-bondseek-observability.md) — 工具调用树（每次工具调用留痕：耗时/参数/结果）
+- [`notes/agent-interview-questions.md`](../../notes/agent-interview-questions.md) — 面试话题索引（第 15 题）

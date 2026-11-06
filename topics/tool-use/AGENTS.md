@@ -1,6 +1,6 @@
 ﻿# tool-use -- 工具使用与函数调用
 
-**路径:** 	opics/tool-use/
+**路径:** topics/tool-use/
 **作用:** 探讨 Agent 如何定义、发现、调用工具，以及处理调用过程中的错误和异常。
 
 ## 关键文档
@@ -8,10 +8,10 @@
 | 文件 | 内容 |
 |------|------|
 | index.md | 工具使用架构总览 |
-| 	ool-definition.md | Function Calling Schema 设计 |
-| 	ool-registry.md | 工具注册、发现、版本管理 |
-| invocation-patterns.md | 同步/异步/流式调用、并行调用、重试策略 |
-| error-handling.md | 工具调用失败的处理策略（降级、重试、报错）|
+| tool-definition.md | Function Calling Schema 设计（计划，未创建） |
+| tool-registry.md | 工具注册、发现、版本管理（计划，未创建） |
+| invocation-patterns.md | 同步/异步/流式调用、并行调用、重试语义（主张-证据矩阵 + 失效边界卡 + N=20 实测 + 三层面试回答） |
+| error-handling.md | 工具调用失败的处理策略（降级、重试、报错）（计划，未创建）|
 
 ## JSON Schema 规范
 
@@ -46,9 +46,9 @@
 
 ## 搜索指引
 
-- 	ool-registry.md 中的 **Implementation** 章节: 注册模式代码
+- tool-registry.md 中的 **Implementation** 章节: 注册模式代码
 - invocation-patterns.md 中的 **Examples**: 调用示例
-- 跨话题引用: ../agent-architecture/cognitive-loop.md
+- 跨话题引用: ../agent-architecture/cognitive-architecture-paradigms.md（原 cognitive-loop.md 合并至此文档的 ReAct 章节）
 
 ## 质量检查
 

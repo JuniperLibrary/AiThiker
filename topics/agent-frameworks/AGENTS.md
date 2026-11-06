@@ -45,4 +45,4 @@
 
 ---
 
-交叉引用: → ../agent-architecture/, ../patterns/, ../tool-use/, ../evaluation-and-benchmarks/
+交叉引用: → ../agent-architecture/, ../../patterns/, ../tool-use/, ../evaluation-and-benchmarks/
